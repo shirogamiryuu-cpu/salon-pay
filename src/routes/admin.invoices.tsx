@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Loader2, FileText, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 
@@ -132,10 +131,6 @@ function InvoicesPage() {
 
       <div className="text-xs text-muted-foreground">
         Tip: click a row to view the printable invoice.
-      </div>
-      <div className="hidden">
-        {/* keep Button import used */}
-        <Button />
       </div>
     </div>
   );
