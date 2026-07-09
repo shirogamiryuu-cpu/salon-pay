@@ -171,6 +171,8 @@ export type Database = {
           sessions_remaining: number
           total_price: number
           total_sessions: number
+          variant_id: string | null
+          variant_label: string | null
           warranty_expires_at: string | null
           warranty_years: number
         }
@@ -186,6 +188,8 @@ export type Database = {
           sessions_remaining: number
           total_price?: number
           total_sessions: number
+          variant_id?: string | null
+          variant_label?: string | null
           warranty_expires_at?: string | null
           warranty_years?: number
         }
@@ -201,6 +205,8 @@ export type Database = {
           sessions_remaining?: number
           total_price?: number
           total_sessions?: number
+          variant_id?: string | null
+          variant_label?: string | null
           warranty_expires_at?: string | null
           warranty_years?: number
         }
@@ -217,6 +223,13 @@ export type Database = {
             columns: ["package_id"]
             isOneToOne: false
             referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_packages_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "package_variants"
             referencedColumns: ["id"]
           },
         ]
@@ -284,10 +297,52 @@ export type Database = {
           },
         ]
       }
+      package_variants: {
+        Row: {
+          created_at: string
+          first_time_price: number | null
+          id: string
+          label: string
+          package_id: string
+          price: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          first_time_price?: number | null
+          id?: string
+          label: string
+          package_id: string
+          price: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          first_time_price?: number | null
+          id?: string
+          label?: string
+          package_id?: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "package_variants_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       packages: {
         Row: {
           created_at: string
           description: string | null
+          first_time_price: number | null
           id: string
           image_url: string | null
           is_active: boolean
@@ -299,6 +354,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          first_time_price?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -310,6 +366,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          first_time_price?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean
