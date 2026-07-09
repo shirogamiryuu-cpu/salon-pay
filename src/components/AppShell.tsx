@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, Scissors, LayoutDashboard, Settings, DollarSign, Wallet, User, FileText, Sliders } from "lucide-react";
+import { LogOut, Scissors, LayoutDashboard, Settings, DollarSign, Wallet, User, FileText, Sliders, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -97,6 +97,7 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
 
 export const adminNav: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/staff", label: "Staff", icon: Users },
   { to: "/admin/rules", label: "Rules", icon: Settings },
   { to: "/admin/earnings", label: "Earnings", icon: DollarSign },
   { to: "/admin/invoices", label: "Invoices", icon: FileText },
