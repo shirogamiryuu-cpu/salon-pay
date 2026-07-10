@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,10 +9,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Scissors } from "lucide-react";
 
-export const Route = createFileRoute("/auth")({
-  ssr: false,
-  component: AuthPage,
-});
+export default AuthPage;
+
 
 function AuthPage() {
   const [email, setEmail] = useState("");
@@ -23,9 +21,9 @@ function AuthPage() {
 
   useEffect(() => {
     if (loading || !session) return;
-    if (isAdmin) navigate({ to: "/admin" });
-    else if (isStaff) navigate({ to: "/staff" });
-    else navigate({ to: "/" });
+    if (isAdmin) navigate("/admin");
+    else if (isStaff) navigate("/staff");
+    else navigate("/");
   }, [session, loading, isAdmin, isStaff, navigate]);
 
   async function handleSignIn(e: React.FormEvent) {

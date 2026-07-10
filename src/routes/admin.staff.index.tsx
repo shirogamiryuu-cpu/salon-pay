@@ -1,14 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, ChevronRight, User } from "lucide-react";
 
-export const Route = createFileRoute("/admin/staff/")({
-  ssr: false,
-  component: StaffListPage,
-});
+export default StaffListPage;
+
 
 function StaffListPage() {
   const { data, isLoading } = useQuery({
@@ -68,8 +66,7 @@ function StaffListPage() {
               {data.map((s) => (
                 <Link
                   key={s.id}
-                  to="/admin/staff/$userId"
-                  params={{ userId: s.id }}
+                  to={`/admin/staff/${s.id}`}
                   className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors"
                 >
                   <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">

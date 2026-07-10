@@ -1,12 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
-export const Route = createFileRoute("/")({
-  ssr: false,
-  component: Index,
-});
+export default Index;
+
 
 function Index() {
   const { loading, session, isAdmin, isStaff } = useAuth();
@@ -14,10 +12,10 @@ function Index() {
 
   useEffect(() => {
     if (loading) return;
-    if (!session) navigate({ to: "/auth" });
-    else if (isAdmin) navigate({ to: "/admin" });
-    else if (isStaff) navigate({ to: "/staff" });
-    else navigate({ to: "/auth" });
+    if (!session) navigate("/auth");
+    else if (isAdmin) navigate("/admin");
+    else if (isStaff) navigate("/staff");
+    else navigate("/auth");
   }, [loading, session, isAdmin, isStaff, navigate]);
 
   return (

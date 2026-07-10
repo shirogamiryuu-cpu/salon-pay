@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,13 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Printer, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 
-export const Route = createFileRoute("/staff/invoices/$yearMonth")({
-  ssr: false,
-  component: StaffInvoiceDetail,
-});
+export default StaffInvoiceDetail;
+
 
 function StaffInvoiceDetail() {
-  const { yearMonth } = Route.useParams();
+  const { yearMonth } = useParams();
   const { user } = useAuth();
 
   const { start, end, label } = useMemo(() => {

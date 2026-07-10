@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo, useState } from "react";
@@ -9,10 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { format } from "date-fns";
 
-export const Route = createFileRoute("/admin/earnings")({
-  ssr: false,
-  component: EarningsPage,
-});
+export default EarningsPage;
+
 
 function EarningsPage() {
   const [staffFilter, setStaffFilter] = useState<string>("all");
