@@ -53,7 +53,7 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
         {/* Mobile nav */}
         <nav className="flex lg:hidden overflow-x-auto border-t">
           {nav.map((item) => {
-            const active = location.pathname === item.to || (item.to !== "/" && location.pathname.startsWith(item.to));
+            const active = isActive(item.to);
             const Icon = item.icon;
             return (
               <Link
