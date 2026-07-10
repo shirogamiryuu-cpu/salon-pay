@@ -13,7 +13,7 @@ export default StaffInvoiceDetail;
 
 
 function StaffInvoiceDetail() {
-  const { yearMonth } = useParams();
+  const { yearMonth = "" } = useParams();
   const { user } = useAuth();
 
   const { start, end, label } = useMemo(() => {

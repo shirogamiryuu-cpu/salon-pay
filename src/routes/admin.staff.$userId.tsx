@@ -12,7 +12,7 @@ export default StaffDetailPage;
 
 
 function StaffDetailPage() {
-  const { userId } = useParams();
+  const { userId = "" } = useParams();
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-staff-detail", userId],

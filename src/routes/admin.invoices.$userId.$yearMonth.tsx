@@ -13,7 +13,7 @@ export default InvoiceDetail;
 
 
 function InvoiceDetail() {
-  const { userId, yearMonth } = useParams();
+  const { userId = "", yearMonth = "" } = useParams();
   const qc = useQueryClient();
 
   const { start, end, label } = useMemo(() => {
