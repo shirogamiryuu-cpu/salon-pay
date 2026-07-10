@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as StaffIndexRouteImport } from './routes/staff.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as StaffInvoicesRouteImport } from './routes/staff.invoices'
+import { Route as AdminStaffRouteImport } from './routes/admin.staff'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminRulesRouteImport } from './routes/admin.rules'
 import { Route as AdminPayrollRouteImport } from './routes/admin.payroll'
@@ -61,6 +62,11 @@ const StaffInvoicesRoute = StaffInvoicesRouteImport.update({
   path: '/invoices',
   getParentRoute: () => StaffRoute,
 } as any)
+const AdminStaffRoute = AdminStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -87,9 +93,9 @@ const AdminEarningsRoute = AdminEarningsRouteImport.update({
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminStaffIndexRoute = AdminStaffIndexRouteImport.update({
-  id: '/staff/',
-  path: '/staff/',
-  getParentRoute: () => AdminRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminStaffRoute,
 } as any)
 const StaffInvoicesYearMonthRoute = StaffInvoicesYearMonthRouteImport.update({
   id: '/$yearMonth',
@@ -97,9 +103,9 @@ const StaffInvoicesYearMonthRoute = StaffInvoicesYearMonthRouteImport.update({
   getParentRoute: () => StaffInvoicesRoute,
 } as any)
 const AdminStaffUserIdRoute = AdminStaffUserIdRouteImport.update({
-  id: '/staff/$userId',
-  path: '/staff/$userId',
-  getParentRoute: () => AdminRoute,
+  id: '/$userId',
+  path: '/$userId',
+  getParentRoute: () => AdminStaffRoute,
 } as any)
 const AdminInvoicesUserIdYearMonthRoute =
   AdminInvoicesUserIdYearMonthRouteImport.update({
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/rules': typeof AdminRulesRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/staff': typeof AdminStaffRouteWithChildren
   '/staff/invoices': typeof StaffInvoicesRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/staff/': typeof StaffIndexRoute
@@ -153,6 +160,7 @@ export interface FileRoutesById {
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/rules': typeof AdminRulesRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/staff': typeof AdminStaffRouteWithChildren
   '/staff/invoices': typeof StaffInvoicesRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/staff/': typeof StaffIndexRoute
@@ -173,6 +181,7 @@ export interface FileRouteTypes {
     | '/admin/payroll'
     | '/admin/rules'
     | '/admin/settings'
+    | '/admin/staff'
     | '/staff/invoices'
     | '/admin/'
     | '/staff/'
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/admin/payroll'
     | '/admin/rules'
     | '/admin/settings'
+    | '/admin/staff'
     | '/staff/invoices'
     | '/admin/'
     | '/staff/'
@@ -274,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaffInvoicesRouteImport
       parentRoute: typeof StaffRoute
     }
+    '/admin/staff': {
+      id: '/admin/staff'
+      path: '/staff'
+      fullPath: '/admin/staff'
+      preLoaderRoute: typeof AdminStaffRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/settings': {
       id: '/admin/settings'
       path: '/settings'
@@ -311,10 +328,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/staff/': {
       id: '/admin/staff/'
-      path: '/staff'
+      path: '/'
       fullPath: '/admin/staff/'
       preLoaderRoute: typeof AdminStaffIndexRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof AdminStaffRoute
     }
     '/staff/invoices/$yearMonth': {
       id: '/staff/invoices/$yearMonth'
@@ -325,10 +342,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/staff/$userId': {
       id: '/admin/staff/$userId'
-      path: '/staff/$userId'
+      path: '/$userId'
       fullPath: '/admin/staff/$userId'
       preLoaderRoute: typeof AdminStaffUserIdRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof AdminStaffRoute
     }
     '/admin/invoices/$userId/$yearMonth': {
       id: '/admin/invoices/$userId/$yearMonth'
@@ -352,15 +369,28 @@ const AdminInvoicesRouteWithChildren = AdminInvoicesRoute._addFileChildren(
   AdminInvoicesRouteChildren,
 )
 
+interface AdminStaffRouteChildren {
+  AdminStaffUserIdRoute: typeof AdminStaffUserIdRoute
+  AdminStaffIndexRoute: typeof AdminStaffIndexRoute
+}
+
+const AdminStaffRouteChildren: AdminStaffRouteChildren = {
+  AdminStaffUserIdRoute: AdminStaffUserIdRoute,
+  AdminStaffIndexRoute: AdminStaffIndexRoute,
+}
+
+const AdminStaffRouteWithChildren = AdminStaffRoute._addFileChildren(
+  AdminStaffRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminEarningsRoute: typeof AdminEarningsRoute
   AdminInvoicesRoute: typeof AdminInvoicesRouteWithChildren
   AdminPayrollRoute: typeof AdminPayrollRoute
   AdminRulesRoute: typeof AdminRulesRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminStaffRoute: typeof AdminStaffRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
-  AdminStaffUserIdRoute: typeof AdminStaffUserIdRoute
-  AdminStaffIndexRoute: typeof AdminStaffIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -369,9 +399,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPayrollRoute: AdminPayrollRoute,
   AdminRulesRoute: AdminRulesRoute,
   AdminSettingsRoute: AdminSettingsRoute,
+  AdminStaffRoute: AdminStaffRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
-  AdminStaffUserIdRoute: AdminStaffUserIdRoute,
-  AdminStaffIndexRoute: AdminStaffIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
