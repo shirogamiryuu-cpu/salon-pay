@@ -593,6 +593,8 @@ export type Database = {
           staff_ids: string[]
           status: string
           usage_log_id: string | null
+          variant_id: string | null
+          variant_label: string | null
         }
         Insert: {
           admin_id: string
@@ -605,6 +607,8 @@ export type Database = {
           staff_ids?: string[]
           status?: string
           usage_log_id?: string | null
+          variant_id?: string | null
+          variant_label?: string | null
         }
         Update: {
           admin_id?: string
@@ -617,6 +621,8 @@ export type Database = {
           staff_ids?: string[]
           status?: string
           usage_log_id?: string | null
+          variant_id?: string | null
+          variant_label?: string | null
         }
         Relationships: [
           {
@@ -631,6 +637,13 @@ export type Database = {
             columns: ["usage_log_id"]
             isOneToOne: false
             referencedRelation: "usage_logs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_deduction_requests_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "package_variants"
             referencedColumns: ["id"]
           },
         ]
@@ -747,19 +760,31 @@ export type Database = {
           admin_id: string
           customer_package_id: string
           id: string
+          price_applied: number
           used_at: string
+          variant_id: string | null
+          variant_label: string | null
+          was_first_time: boolean
         }
         Insert: {
           admin_id: string
           customer_package_id: string
           id?: string
+          price_applied?: number
           used_at?: string
+          variant_id?: string | null
+          variant_label?: string | null
+          was_first_time?: boolean
         }
         Update: {
           admin_id?: string
           customer_package_id?: string
           id?: string
+          price_applied?: number
           used_at?: string
+          variant_id?: string | null
+          variant_label?: string | null
+          was_first_time?: boolean
         }
         Relationships: [
           {
@@ -774,6 +799,13 @@ export type Database = {
             columns: ["customer_package_id"]
             isOneToOne: false
             referencedRelation: "customer_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "usage_logs_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "package_variants"
             referencedColumns: ["id"]
           },
         ]
