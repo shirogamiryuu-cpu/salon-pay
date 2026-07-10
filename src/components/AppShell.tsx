@@ -16,6 +16,13 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
   const location = useLocation();
   const navigate = useNavigate();
 
+  const indexPaths = new Set(["/admin", "/staff", "/"]);
+  function isActive(to: string) {
+    const path = location.pathname;
+    if (indexPaths.has(to)) return path === to;
+    return path === to || path.startsWith(to + "/");
+  }
+
   async function handleSignOut() {
     await signOut();
     navigate("/auth");
