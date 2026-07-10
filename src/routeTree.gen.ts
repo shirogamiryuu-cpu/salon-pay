@@ -20,6 +20,7 @@ import { Route as AdminStaffRouteImport } from './routes/admin.staff'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminRulesRouteImport } from './routes/admin.rules'
 import { Route as AdminPayrollRouteImport } from './routes/admin.payroll'
+import { Route as AdminInvoicesRouteImport } from './routes/admin.invoices'
 import { Route as AdminEarningsRouteImport } from './routes/admin.earnings'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin.staff.index'
 import { Route as AdminInvoicesIndexRouteImport } from './routes/admin.invoices.index'
@@ -82,6 +83,11 @@ const AdminPayrollRoute = AdminPayrollRouteImport.update({
   path: '/payroll',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminInvoicesRoute = AdminInvoicesRouteImport.update({
+  id: '/invoices',
+  path: '/invoices',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminEarningsRoute = AdminEarningsRouteImport.update({
   id: '/earnings',
   path: '/earnings',
@@ -93,9 +99,9 @@ const AdminStaffIndexRoute = AdminStaffIndexRouteImport.update({
   getParentRoute: () => AdminStaffRoute,
 } as any)
 const AdminInvoicesIndexRoute = AdminInvoicesIndexRouteImport.update({
-  id: '/invoices/',
-  path: '/invoices/',
-  getParentRoute: () => AdminRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminInvoicesRoute,
 } as any)
 const StaffInvoicesYearMonthRoute = StaffInvoicesYearMonthRouteImport.update({
   id: '/$yearMonth',
@@ -109,9 +115,9 @@ const AdminStaffUserIdRoute = AdminStaffUserIdRouteImport.update({
 } as any)
 const AdminInvoicesUserIdYearMonthRoute =
   AdminInvoicesUserIdYearMonthRouteImport.update({
-    id: '/invoices/$userId/$yearMonth',
-    path: '/invoices/$userId/$yearMonth',
-    getParentRoute: () => AdminRoute,
+    id: '/$userId/$yearMonth',
+    path: '/$userId/$yearMonth',
+    getParentRoute: () => AdminInvoicesRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/staff': typeof StaffRouteWithChildren
   '/admin/earnings': typeof AdminEarningsRoute
+  '/admin/invoices': typeof AdminInvoicesRouteWithChildren
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/rules': typeof AdminRulesRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -156,6 +163,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/staff': typeof StaffRouteWithChildren
   '/admin/earnings': typeof AdminEarningsRoute
+  '/admin/invoices': typeof AdminInvoicesRouteWithChildren
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/rules': typeof AdminRulesRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -177,6 +185,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/staff'
     | '/admin/earnings'
+    | '/admin/invoices'
     | '/admin/payroll'
     | '/admin/rules'
     | '/admin/settings'
@@ -212,6 +221,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/staff'
     | '/admin/earnings'
+    | '/admin/invoices'
     | '/admin/payroll'
     | '/admin/rules'
     | '/admin/settings'
@@ -312,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPayrollRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/invoices': {
+      id: '/admin/invoices'
+      path: '/invoices'
+      fullPath: '/admin/invoices'
+      preLoaderRoute: typeof AdminInvoicesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/earnings': {
       id: '/admin/earnings'
       path: '/earnings'
@@ -328,10 +345,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/invoices/': {
       id: '/admin/invoices/'
-      path: '/invoices'
+      path: '/'
       fullPath: '/admin/invoices/'
       preLoaderRoute: typeof AdminInvoicesIndexRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof AdminInvoicesRoute
     }
     '/staff/invoices/$yearMonth': {
       id: '/staff/invoices/$yearMonth'
@@ -349,13 +366,27 @@ declare module '@tanstack/react-router' {
     }
     '/admin/invoices/$userId/$yearMonth': {
       id: '/admin/invoices/$userId/$yearMonth'
-      path: '/invoices/$userId/$yearMonth'
+      path: '/$userId/$yearMonth'
       fullPath: '/admin/invoices/$userId/$yearMonth'
       preLoaderRoute: typeof AdminInvoicesUserIdYearMonthRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof AdminInvoicesRoute
     }
   }
 }
+
+interface AdminInvoicesRouteChildren {
+  AdminInvoicesIndexRoute: typeof AdminInvoicesIndexRoute
+  AdminInvoicesUserIdYearMonthRoute: typeof AdminInvoicesUserIdYearMonthRoute
+}
+
+const AdminInvoicesRouteChildren: AdminInvoicesRouteChildren = {
+  AdminInvoicesIndexRoute: AdminInvoicesIndexRoute,
+  AdminInvoicesUserIdYearMonthRoute: AdminInvoicesUserIdYearMonthRoute,
+}
+
+const AdminInvoicesRouteWithChildren = AdminInvoicesRoute._addFileChildren(
+  AdminInvoicesRouteChildren,
+)
 
 interface AdminStaffRouteChildren {
   AdminStaffUserIdRoute: typeof AdminStaffUserIdRoute
@@ -373,24 +404,22 @@ const AdminStaffRouteWithChildren = AdminStaffRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminEarningsRoute: typeof AdminEarningsRoute
+  AdminInvoicesRoute: typeof AdminInvoicesRouteWithChildren
   AdminPayrollRoute: typeof AdminPayrollRoute
   AdminRulesRoute: typeof AdminRulesRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminStaffRoute: typeof AdminStaffRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
-  AdminInvoicesIndexRoute: typeof AdminInvoicesIndexRoute
-  AdminInvoicesUserIdYearMonthRoute: typeof AdminInvoicesUserIdYearMonthRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminEarningsRoute: AdminEarningsRoute,
+  AdminInvoicesRoute: AdminInvoicesRouteWithChildren,
   AdminPayrollRoute: AdminPayrollRoute,
   AdminRulesRoute: AdminRulesRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminStaffRoute: AdminStaffRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
-  AdminInvoicesIndexRoute: AdminInvoicesIndexRoute,
-  AdminInvoicesUserIdYearMonthRoute: AdminInvoicesUserIdYearMonthRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
