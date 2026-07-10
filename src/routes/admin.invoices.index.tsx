@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Loader2, FileText, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 
@@ -13,18 +14,33 @@ export const Route = createFileRoute("/admin/invoices/")({
   component: InvoicesPage,
 });
 
-function InvoicesPage() {
-  const [ym, setYm] = useState(format(new Date(), "yyyy-MM"));
+type Mode = "month" | "range";
 
-  const { start, end } = useMemo(() => {
-    const [y, m] = ym.split("-").map(Number);
-    const start = new Date(y, m - 1, 1);
-    const end = new Date(y, m, 1);
-    return { start: start.toISOString(), end: end.toISOString() };
-  }, [ym]);
+function InvoicesPage() {
+  const [mode, setMode] = useState<Mode>("month");
+  const [ym, setYm] = useState(format(new Date(), "yyyy-MM"));
+  const [from, setFrom] = useState(format(new Date(new Date().getFullYear(), new Date().getMonth(), 1), "yyyy-MM-dd"));
+  const [to, setTo] = useState(format(new Date(), "yyyy-MM-dd"));
+
+  const { start, end, rangeLabel } = useMemo(() => {
+    if (mode === "month") {
+      const [y, m] = ym.split("-").map(Number);
+      const s = new Date(y, m - 1, 1);
+      const e = new Date(y, m, 1);
+      return { start: s.toISOString(), end: e.toISOString(), rangeLabel: format(s, "MMMM yyyy") };
+    }
+    const s = new Date(from + "T00:00:00");
+    const e = new Date(to + "T00:00:00");
+    e.setDate(e.getDate() + 1);
+    return {
+      start: s.toISOString(),
+      end: e.toISOString(),
+      rangeLabel: `${format(s, "MMM d, yyyy")} – ${format(new Date(to + "T00:00:00"), "MMM d, yyyy")}`,
+    };
+  }, [mode, ym, from, to]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["invoices-month", ym],
+    queryKey: ["invoices-range", mode, ym, from, to],
     queryFn: async () => {
       const { data: entries, error } = await supabase
         .from("commission_entries")
@@ -76,17 +92,74 @@ function InvoicesPage() {
     };
   }, [data]);
 
+  const setThisMonth = () => {
+    setMode("month");
+    setYm(format(new Date(), "yyyy-MM"));
+  };
+  const setLastMonth = () => {
+    setMode("month");
+    const d = new Date();
+    d.setMonth(d.getMonth() - 1);
+    setYm(format(d, "yyyy-MM"));
+  };
+  const setLast30 = () => {
+    setMode("range");
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 29);
+    setFrom(format(start, "yyyy-MM-dd"));
+    setTo(format(end, "yyyy-MM-dd"));
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Monthly Invoices</h1>
-          <p className="text-sm text-muted-foreground">Per-person commission totals for the selected month.</p>
+          <h1 className="text-2xl font-bold">Invoices</h1>
+          <p className="text-sm text-muted-foreground">Per-person commission totals for {rangeLabel}.</p>
         </div>
-        <div className="space-y-1">
-          <Label className="text-xs">Month</Label>
-          <Input type="month" value={ym} onChange={(e) => setYm(e.target.value)} className="w-[180px]" />
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="space-y-1">
+            <Label className="text-xs">Filter by</Label>
+            <div className="flex rounded-md border p-0.5">
+              <button
+                onClick={() => setMode("month")}
+                className={`px-3 py-1 text-xs rounded-sm ${mode === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+              >
+                Month
+              </button>
+              <button
+                onClick={() => setMode("range")}
+                className={`px-3 py-1 text-xs rounded-sm ${mode === "range" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+              >
+                Date range
+              </button>
+            </div>
+          </div>
+          {mode === "month" ? (
+            <div className="space-y-1">
+              <Label className="text-xs">Month</Label>
+              <Input type="month" value={ym} onChange={(e) => setYm(e.target.value)} className="w-[180px]" />
+            </div>
+          ) : (
+            <>
+              <div className="space-y-1">
+                <Label className="text-xs">From</Label>
+                <Input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)} className="w-[160px]" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">To</Label>
+                <Input type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)} className="w-[160px]" />
+              </div>
+            </>
+          )}
         </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" size="sm" onClick={setThisMonth}>This month</Button>
+        <Button variant="outline" size="sm" onClick={setLastMonth}>Last month</Button>
+        <Button variant="outline" size="sm" onClick={setLast30}>Last 30 days</Button>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -100,14 +173,14 @@ function InvoicesPage() {
           {isLoading ? (
             <div className="p-8 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
           ) : !data?.length ? (
-            <div className="p-10 text-center text-sm text-muted-foreground">No commissions in this month.</div>
+            <div className="p-10 text-center text-sm text-muted-foreground">No commissions in this period.</div>
           ) : (
             <div className="divide-y">
               {data.map((r) => (
                 <Link
                   key={r.staff_user_id}
                   to="/admin/invoices/$userId/$yearMonth"
-                  params={{ userId: r.staff_user_id, yearMonth: ym }}
+                  params={{ userId: r.staff_user_id, yearMonth: mode === "month" ? ym : format(new Date(start), "yyyy-MM") }}
                   className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors"
                 >
                   <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
@@ -130,7 +203,7 @@ function InvoicesPage() {
       </Card>
 
       <div className="text-xs text-muted-foreground">
-        Tip: click a row to view the printable invoice.
+        Tip: click a row to view the printable invoice for that person.
       </div>
     </div>
   );
