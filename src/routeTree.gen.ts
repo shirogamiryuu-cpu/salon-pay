@@ -23,6 +23,7 @@ import { Route as AdminPayrollRouteImport } from './routes/admin.payroll'
 import { Route as AdminInvoicesRouteImport } from './routes/admin.invoices'
 import { Route as AdminEarningsRouteImport } from './routes/admin.earnings'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin.staff.index'
+import { Route as AdminInvoicesIndexRouteImport } from './routes/admin.invoices.index'
 import { Route as StaffInvoicesYearMonthRouteImport } from './routes/staff.invoices.$yearMonth'
 import { Route as AdminStaffUserIdRouteImport } from './routes/admin.staff.$userId'
 import { Route as AdminInvoicesUserIdYearMonthRouteImport } from './routes/admin.invoices.$userId.$yearMonth'
@@ -97,6 +98,11 @@ const AdminStaffIndexRoute = AdminStaffIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminStaffRoute,
 } as any)
+const AdminInvoicesIndexRoute = AdminInvoicesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminInvoicesRoute,
+} as any)
 const StaffInvoicesYearMonthRoute = StaffInvoicesYearMonthRouteImport.update({
   id: '/$yearMonth',
   path: '/$yearMonth',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/staff/': typeof StaffIndexRoute
   '/admin/staff/$userId': typeof AdminStaffUserIdRoute
   '/staff/invoices/$yearMonth': typeof StaffInvoicesYearMonthRoute
+  '/admin/invoices/': typeof AdminInvoicesIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/invoices/$userId/$yearMonth': typeof AdminInvoicesUserIdYearMonthRoute
 }
@@ -137,7 +144,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/admin/earnings': typeof AdminEarningsRoute
-  '/admin/invoices': typeof AdminInvoicesRouteWithChildren
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/rules': typeof AdminRulesRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -146,6 +152,7 @@ export interface FileRoutesByTo {
   '/staff': typeof StaffIndexRoute
   '/admin/staff/$userId': typeof AdminStaffUserIdRoute
   '/staff/invoices/$yearMonth': typeof StaffInvoicesYearMonthRoute
+  '/admin/invoices': typeof AdminInvoicesIndexRoute
   '/admin/staff': typeof AdminStaffIndexRoute
   '/admin/invoices/$userId/$yearMonth': typeof AdminInvoicesUserIdYearMonthRoute
 }
@@ -166,6 +173,7 @@ export interface FileRoutesById {
   '/staff/': typeof StaffIndexRoute
   '/admin/staff/$userId': typeof AdminStaffUserIdRoute
   '/staff/invoices/$yearMonth': typeof StaffInvoicesYearMonthRoute
+  '/admin/invoices/': typeof AdminInvoicesIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/invoices/$userId/$yearMonth': typeof AdminInvoicesUserIdYearMonthRoute
 }
@@ -187,6 +195,7 @@ export interface FileRouteTypes {
     | '/staff/'
     | '/admin/staff/$userId'
     | '/staff/invoices/$yearMonth'
+    | '/admin/invoices/'
     | '/admin/staff/'
     | '/admin/invoices/$userId/$yearMonth'
   fileRoutesByTo: FileRoutesByTo
@@ -194,7 +203,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/admin/earnings'
-    | '/admin/invoices'
     | '/admin/payroll'
     | '/admin/rules'
     | '/admin/settings'
@@ -203,6 +211,7 @@ export interface FileRouteTypes {
     | '/staff'
     | '/admin/staff/$userId'
     | '/staff/invoices/$yearMonth'
+    | '/admin/invoices'
     | '/admin/staff'
     | '/admin/invoices/$userId/$yearMonth'
   id:
@@ -222,6 +231,7 @@ export interface FileRouteTypes {
     | '/staff/'
     | '/admin/staff/$userId'
     | '/staff/invoices/$yearMonth'
+    | '/admin/invoices/'
     | '/admin/staff/'
     | '/admin/invoices/$userId/$yearMonth'
   fileRoutesById: FileRoutesById
@@ -333,6 +343,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminStaffIndexRouteImport
       parentRoute: typeof AdminStaffRoute
     }
+    '/admin/invoices/': {
+      id: '/admin/invoices/'
+      path: '/'
+      fullPath: '/admin/invoices/'
+      preLoaderRoute: typeof AdminInvoicesIndexRouteImport
+      parentRoute: typeof AdminInvoicesRoute
+    }
     '/staff/invoices/$yearMonth': {
       id: '/staff/invoices/$yearMonth'
       path: '/$yearMonth'
@@ -358,10 +375,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminInvoicesRouteChildren {
+  AdminInvoicesIndexRoute: typeof AdminInvoicesIndexRoute
   AdminInvoicesUserIdYearMonthRoute: typeof AdminInvoicesUserIdYearMonthRoute
 }
 
 const AdminInvoicesRouteChildren: AdminInvoicesRouteChildren = {
+  AdminInvoicesIndexRoute: AdminInvoicesIndexRoute,
   AdminInvoicesUserIdYearMonthRoute: AdminInvoicesUserIdYearMonthRoute,
 }
 
