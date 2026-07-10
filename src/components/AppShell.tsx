@@ -77,7 +77,7 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
         <aside className="hidden lg:flex w-56 flex-col border-r bg-background min-h-[calc(100vh-3.5rem)] sticky top-14">
           <nav className="p-3 space-y-1">
             {nav.map((item) => {
-              const active = location.pathname === item.to || (item.to !== "/" && location.pathname.startsWith(item.to));
+              const active = isActive(item.to);
               const Icon = item.icon;
               return (
                 <Link
