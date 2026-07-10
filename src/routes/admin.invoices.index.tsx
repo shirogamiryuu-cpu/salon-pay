@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, FileText, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 
-export const Route = createFileRoute("/admin/invoices")({
+export const Route = createFileRoute("/admin/invoices/")({
   ssr: false,
   component: InvoicesPage,
 });
