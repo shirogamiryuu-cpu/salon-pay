@@ -18,7 +18,7 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
 
   async function handleSignOut() {
     await signOut();
-    navigate({ to: "/auth" });
+    navigate("/auth");
   }
 
   return (
