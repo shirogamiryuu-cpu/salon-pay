@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, ChevronRight, User } from "lucide-react";
 
-export const Route = createFileRoute("/admin/staff")({
+export const Route = createFileRoute("/admin/staff/")({
   ssr: false,
   component: StaffListPage,
 });
