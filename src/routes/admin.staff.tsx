@@ -1,6 +1,5 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { Outlet } from "react-router-dom";
 
-export const Route = createFileRoute("/admin/staff")({
-  ssr: false,
-  component: () => <Outlet />,
-});
+function LayoutRoute() { return <Outlet />; }
+export default LayoutRoute;
+

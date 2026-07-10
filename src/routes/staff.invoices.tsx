@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,10 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Loader2, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 
-export const Route = createFileRoute("/staff/invoices")({
-  ssr: false,
-  component: StaffInvoices,
-});
+export default StaffInvoices;
+
 
 function StaffInvoices() {
   const { user } = useAuth();
@@ -62,8 +60,7 @@ function StaffInvoices() {
               {months.map((m) => (
                 <Link
                   key={m.ym}
-                  to="/staff/invoices/$yearMonth"
-                  params={{ yearMonth: m.ym }}
+                  to={`/staff/invoices/${m.ym}`}
                   className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors"
                 >
                   <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">

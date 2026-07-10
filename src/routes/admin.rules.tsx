@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
@@ -13,10 +13,8 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Plus, Trash2, Loader2 } from "lucide-react";
 
-export const Route = createFileRoute("/admin/rules")({
-  ssr: false,
-  component: RulesPage,
-});
+export default RulesPage;
+
 
 interface RuleForm {
   name: string;

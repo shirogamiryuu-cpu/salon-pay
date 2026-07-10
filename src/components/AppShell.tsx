@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
 
   async function handleSignOut() {
     await signOut();
-    navigate({ to: "/auth" });
+    navigate("/auth");
   }
 
   return (

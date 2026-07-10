@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
@@ -13,10 +13,8 @@ import { Plus, Download, Check, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/hooks/useAuth";
 
-export const Route = createFileRoute("/admin/payroll")({
-  ssr: false,
-  component: PayrollPage,
-});
+export default PayrollPage;
+
 
 interface PayrollForm {
   name: string;

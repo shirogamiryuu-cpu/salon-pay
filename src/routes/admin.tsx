@@ -1,13 +1,11 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { AppShell, adminNav } from "@/components/AppShell";
 import { Loader2 } from "lucide-react";
 
-export const Route = createFileRoute("/admin")({
-  ssr: false,
-  component: AdminLayout,
-});
+export default AdminLayout;
+
 
 function AdminLayout() {
   const { loading, session, isAdmin } = useAuth();
@@ -15,8 +13,8 @@ function AdminLayout() {
 
   useEffect(() => {
     if (loading) return;
-    if (!session) navigate({ to: "/auth" });
-    else if (!isAdmin) navigate({ to: "/" });
+    if (!session) navigate("/auth");
+    else if (!isAdmin) navigate("/");
   }, [loading, session, isAdmin, navigate]);
 
   if (loading || !session || !isAdmin) {

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo } from "react";
@@ -8,13 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, ArrowLeft, FileText } from "lucide-react";
 import { format } from "date-fns";
 
-export const Route = createFileRoute("/admin/staff/$userId")({
-  ssr: false,
-  component: StaffDetailPage,
-});
+export default StaffDetailPage;
+
 
 function StaffDetailPage() {
-  const { userId } = Route.useParams();
+  const { userId = "" } = useParams();
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-staff-detail", userId],
@@ -100,7 +98,7 @@ function StaffDetailPage() {
                     {m.unpaid > 0 && <div className="text-xs text-amber-600">${m.unpaid.toFixed(2)} unpaid</div>}
                   </div>
                   <Button asChild size="sm" variant="outline">
-                    <Link to="/admin/invoices/$userId/$yearMonth" params={{ userId, yearMonth: m.ym }}>
+                    <Link to={`/admin/invoices/${userId}/${m.ym}`}>
                       <FileText className="h-4 w-4 mr-1" /> Invoice
                     </Link>
                   </Button>

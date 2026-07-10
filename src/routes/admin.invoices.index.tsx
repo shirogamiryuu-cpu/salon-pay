@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo, useState } from "react";
@@ -9,10 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2, FileText, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 
-export const Route = createFileRoute("/admin/invoices/")({
-  ssr: false,
-  component: InvoicesPage,
-});
+export default InvoicesPage;
+
 
 type Mode = "month" | "range";
 
@@ -179,8 +177,7 @@ function InvoicesPage() {
               {data.map((r) => (
                 <Link
                   key={r.staff_user_id}
-                  to="/admin/invoices/$userId/$yearMonth"
-                  params={{ userId: r.staff_user_id, yearMonth: mode === "month" ? ym : format(new Date(start), "yyyy-MM") }}
+                  to={`/admin/invoices/${r.staff_user_id}/${mode === "month" ? ym : format(new Date(start), "yyyy-MM")}`}
                   className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors"
                 >
                   <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">

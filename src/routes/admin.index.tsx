@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,10 +6,8 @@ import { DollarSign, Users, TrendingUp, Wallet, Loader2 } from "lucide-react";
 import { format, subDays, startOfDay } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 
-export const Route = createFileRoute("/admin/")({
-  ssr: false,
-  component: AdminDashboard,
-});
+export default AdminDashboard;
+
 
 function AdminDashboard() {
   const { data, isLoading } = useQuery({
