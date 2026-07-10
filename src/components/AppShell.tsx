@@ -16,6 +16,13 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
   const location = useLocation();
   const navigate = useNavigate();
 
+  const indexPaths = new Set(["/admin", "/staff", "/"]);
+  function isActive(to: string) {
+    const path = location.pathname;
+    if (indexPaths.has(to)) return path === to;
+    return path === to || path.startsWith(to + "/");
+  }
+
   async function handleSignOut() {
     await signOut();
     navigate("/auth");
@@ -46,7 +53,7 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
         {/* Mobile nav */}
         <nav className="flex lg:hidden overflow-x-auto border-t">
           {nav.map((item) => {
-            const active = location.pathname === item.to || (item.to !== "/" && location.pathname.startsWith(item.to));
+            const active = isActive(item.to);
             const Icon = item.icon;
             return (
               <Link
@@ -70,7 +77,7 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
         <aside className="hidden lg:flex w-56 flex-col border-r bg-background min-h-[calc(100vh-3.5rem)] sticky top-14">
           <nav className="p-3 space-y-1">
             {nav.map((item) => {
-              const active = location.pathname === item.to || (item.to !== "/" && location.pathname.startsWith(item.to));
+              const active = isActive(item.to);
               const Icon = item.icon;
               return (
                 <Link
