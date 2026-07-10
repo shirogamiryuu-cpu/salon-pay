@@ -1,48 +1,37 @@
-## Goal
+## Problem
 
-Every approved session pays commission to BOTH the assigned staff and the assigned stylist, using two global percentages the admin can edit in Settings (defaults: staff 3%, stylist 7%). At month end, each person gets a monthly invoice summarizing sessions and total commission.
+The commission trigger currently computes revenue as `packages.price / packages.total_sessions`, ignoring:
+- `usage_logs.price_applied` — the actual amount charged for that session
+- `usage_logs.was_first_time` / `packages.first_time_price` / `package_variants.first_time_price` — first-time promo pricing
+- `customer_packages.total_price` and `variant_id` — the price the customer actually paid (variant, promo, first-time)
 
-## 1. Settings-driven global rates
+Result: staff/stylist commissions on first-time-sale sessions are wrong (calculated off the original package price, not the discounted first-time price).
 
-Today `commission_rules` already supports per-role percentages, but there's no simple "Settings" screen and no guarantee both roles get an entry.
+## Fix
 
-- Add a lightweight `app_settings` key/value table (admin-only write, authenticated read) seeded with:
-  - `default_staff_commission_pct = 3`
-  - `default_stylist_commission_pct = 7`
-- New route `/admin/settings` — two number inputs (Staff %, Stylist %) + Save. Writes to `app_settings`.
-- Update the `create_commission_entries_on_approval` trigger so that when no matching `commission_rule` is found for a given staff member, it falls back to the percentage in `app_settings` for that person's role (stylist → stylist %, staff → staff %) instead of inserting a 0% entry.
-- `commission_rules` stays as the advanced override (per-package or per-role custom rates, higher priority wins). Settings are just the default.
+### 1. Migration — update `create_commission_entries_on_approval`
 
-## 2. Guarantee both roles are paid per session
+Change the revenue calculation to a prioritized fallback chain:
 
-The trigger already iterates every `session_staff` row for the usage log. To make "always staff + stylist" reliable:
+1. **`usage_logs.price_applied`** (single session amount) — authoritative when present.
+2. Else derive per-session revenue from `customer_packages`:
+   - `total_price / NULLIF(total_sessions, 0)` when `total_price` is set.
+3. Else fall back to variant / package first-time or regular price divided by sessions:
+   - If `usage_logs.was_first_time = true` and a `first_time_price` exists (variant preferred, else package), use it.
+   - Else use `package_variants.price` (when `variant_id` set) or `packages.price`.
+   - Divide by `total_sessions` when > 0.
 
-- On the session approval screen (existing `session_deduction_requests` flow lives in the other app), no change needed — as long as both a staff and a stylist are assigned in `session_staff`, both entries are created automatically.
-- In this commission app, on the Earnings page add a small warning badge on any session that produced only one role, so admin can spot missing assignments.
+Everything else in the function (rule matching, role resolution, default 3%/7% fallback, inserts) stays the same. Revoke EXECUTE from `PUBLIC`/`anon`/`authenticated` on the recreated function (keeps prior security fix).
 
-Example: session revenue 230,000 → staff row inserted at 3% = 6,900; stylist row inserted at 7% = 16,100.
+### 2. Backfill existing `commission_entries`
 
-## 3. Monthly invoice per person
+For every existing entry, recompute `session_revenue` using the new logic and recompute `commission_amount` from the stored `commission_type` + `commission_value`. Only touch entries whose `status = 'pending'` to avoid altering anything already paid/included in a payroll run.
 
-New route `/admin/invoices` and `/admin/invoices/$userId/$yearMonth`:
+### 3. No frontend changes required
 
-- List view: pick a month → table of every staff/stylist with session count, gross revenue share, total commission for that month.
-- Detail view: printable invoice for one person for one month — header (name, role, month), line items (date, package, session revenue, rate, commission), totals, "Mark as paid" button that creates a `staff_payment_history` row and flips the entries to `paid`. "Download PDF / Print" via `window.print()` with a print stylesheet.
-- Staff portal (`/staff`) gets a new "Invoices" tab listing their own monthly invoices (read-only, printable).
-
-Reuses existing `commission_entries` + `staff_payment_history` — no new payment tables.
-
-## 4. Nav updates
-
-Add "Settings" and "Invoices" to `adminNav` in `AppShell`. Add "Invoices" tab to staff shell.
-
-## Technical notes
-
-- Migration: create `app_settings (key text pk, value jsonb, updated_at)` with RLS (`SELECT` to authenticated, `ALL` to admins via `has_role`), seed the two default rows, and rewrite `create_commission_entries_on_approval` to read from it as the fallback.
-- Rule resolution order stays: exact package+role rule → role-only rule → package-only rule → `app_settings` role default.
-- Invoice month grouping uses `date_trunc('month', earned_at)` on `commission_entries`.
-- No changes to existing salon tables.
+All UI (dashboard, staff detail, invoices, payroll) already reads `session_revenue` / `commission_amount` from `commission_entries`, so numbers will refresh automatically once the trigger and backfill run.
 
 ## Out of scope
 
-- Auto-emailing invoices, PDF generation server-side, tax handling, multi-currency. Print-to-PDF from the browser covers the immediate need.
+- Splitting revenue differently across multiple staff on one session (still: each staff gets their own % of the session revenue, matching current behavior).
+- Retroactively adjusting entries that are already `included` in a payroll run or `paid` — those are locked.
