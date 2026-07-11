@@ -5,17 +5,17 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
+ * Charme Branding Guidelines 2015 — design system.
  *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
+ * Primary gold: Pantone 871C  ≈ #B8955A
+ * Dark grey:   Pantone Cool Gray 11C ≈ #333333
+ * Cool grey:   Pantone Cool Gray 7C  ≈ #8C8C8C
+ * Warm cream tints for surfaces.
  *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * Fonts:
+ * - Display: GFS Didot (Didot family)
+ * - Italic accent: Bodoni Moda italic
+ * - Body: Nunito Sans (Avenir Next substitute)
  */
 
 @theme inline {
@@ -59,77 +59,104 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-display: "GFS Didot", "Didot", "Playfair Display", Georgia, serif;
+  --font-serif-italic: "Bodoni Moda", "Bodoni MT", Georgia, serif;
+  --font-sans: "Nunito Sans", "Avenir Next", "Avenir", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --radius: 0.5rem;
+
+  /* Neutrals */
+  --background: oklch(1 0 0);                     /* white */
+  --foreground: oklch(0.32 0 0);                  /* #333 Cool Gray 11C */
+
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.32 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.32 0 0);
+
+  /* Primary — Pantone 871C gold */
+  --primary: oklch(0.67 0.078 76);
+  --primary-foreground: oklch(1 0 0);
+
+  /* Warm surfaces */
+  --secondary: oklch(0.955 0.018 85);             /* soft cream */
+  --secondary-foreground: oklch(0.32 0 0);
+  --muted: oklch(0.965 0.012 85);
+  --muted-foreground: oklch(0.6 0 0);             /* #8C8C8C Cool Gray 7C */
+  --accent: oklch(0.92 0.03 85);                  /* warm cream accent */
+  --accent-foreground: oklch(0.32 0 0);
+
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.9 0.015 80);
+  --input: oklch(0.9 0.015 80);
+  --ring: oklch(0.67 0.078 76);
+
+  --chart-1: oklch(0.67 0.078 76);                /* gold */
+  --chart-2: oklch(0.78 0.06 78);                 /* light gold */
+  --chart-3: oklch(0.5 0.05 75);                  /* dark gold */
+  --chart-4: oklch(0.6 0 0);                      /* cool gray */
+  --chart-5: oklch(0.85 0.04 85);                 /* cream */
+
+  --sidebar: oklch(0.985 0.006 85);
+  --sidebar-foreground: oklch(0.32 0 0);
+  --sidebar-primary: oklch(0.67 0.078 76);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.92 0.03 85);
+  --sidebar-accent-foreground: oklch(0.32 0 0);
+  --sidebar-border: oklch(0.9 0.015 80);
+  --sidebar-ring: oklch(0.67 0.078 76);
+
+  /* Brand extras */
+  --gradient-gold: linear-gradient(90deg, oklch(0.78 0.06 78), oklch(0.67 0.078 76), oklch(0.5 0.05 75));
+  --shadow-elegant: 0 10px 30px -12px oklch(0.5 0.05 75 / 0.25);
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
+  /* Guidelines: when dark background required, use dark grey, not pure black */
+  --background: oklch(0.28 0.005 80);             /* dark warm grey */
+  --foreground: oklch(0.98 0.005 85);
+
+  --card: oklch(0.32 0.005 80);
+  --card-foreground: oklch(0.98 0.005 85);
+  --popover: oklch(0.32 0.005 80);
+  --popover-foreground: oklch(0.98 0.005 85);
+
+  --primary: oklch(0.75 0.09 78);                 /* brighter gold on dark */
+  --primary-foreground: oklch(0.22 0.005 80);
+
+  --secondary: oklch(0.38 0.008 80);
+  --secondary-foreground: oklch(0.98 0.005 85);
+  --muted: oklch(0.36 0.008 80);
+  --muted-foreground: oklch(0.75 0.005 85);
+  --accent: oklch(0.42 0.02 80);
+  --accent-foreground: oklch(0.98 0.005 85);
+
   --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
+  --destructive-foreground: oklch(0.98 0.005 85);
+
+  --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --ring: oklch(0.75 0.09 78);
+
+  --chart-1: oklch(0.78 0.09 78);
+  --chart-2: oklch(0.85 0.06 80);
+  --chart-3: oklch(0.6 0.06 75);
+  --chart-4: oklch(0.75 0 0);
+  --chart-5: oklch(0.9 0.03 85);
+
+  --sidebar: oklch(0.24 0.005 80);
+  --sidebar-foreground: oklch(0.98 0.005 85);
+  --sidebar-primary: oklch(0.75 0.09 78);
+  --sidebar-primary-foreground: oklch(0.22 0.005 80);
+  --sidebar-accent: oklch(0.36 0.008 80);
+  --sidebar-accent-foreground: oklch(0.98 0.005 85);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --sidebar-ring: oklch(0.75 0.09 78);
 }
 
 @layer base {
@@ -140,5 +167,35 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
   }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+  }
+
+  .font-serif-italic {
+    font-family: var(--font-serif-italic);
+    font-style: italic;
+  }
+}
+
+/* Charme twinkle motif — 20° rotated slash pattern, low opacity */
+.charme-pattern {
+  background-color: var(--color-background);
+  background-image:
+    repeating-linear-gradient(
+      110deg,
+      transparent 0 22px,
+      oklch(0.67 0.078 76 / 0.08) 22px 24px,
+      transparent 24px 60px
+    ),
+    radial-gradient(circle at 20% 30%, oklch(0.67 0.078 76 / 0.06) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 65%, oklch(0.67 0.078 76 / 0.06) 0 2px, transparent 3px);
+  background-size: auto, 80px 80px, 80px 80px;
+}
+
+@media print {
+  .charme-pattern { background: white; }
 }
