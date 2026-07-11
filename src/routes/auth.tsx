@@ -7,10 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Scissors } from "lucide-react";
+import { CharmeLogo } from "@/components/CharmeLogo";
 
 export default AuthPage;
-
 
 function AuthPage() {
   const [email, setEmail] = useState("");
@@ -36,16 +35,24 @@ function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/30 to-background p-4">
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="text-center space-y-3">
-          <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Scissors className="h-6 w-6 text-primary" />
+    <div className="min-h-screen flex items-center justify-center charme-pattern p-4">
+      <Card
+        className="w-full max-w-md border-0"
+        style={{ boxShadow: "var(--shadow-elegant)" }}
+      >
+        <CardHeader className="text-center space-y-4 pt-8">
+          <CharmeLogo size="lg" />
+          <div className="h-[2px] w-16 mx-auto" style={{ background: "var(--gradient-gold)" }} />
+          <div>
+            <CardTitle className="text-xl font-display font-normal tracking-wide">
+              Commission Management
+            </CardTitle>
+            <CardDescription className="mt-1">
+              Sign in to manage staff earnings &amp; payroll
+            </CardDescription>
           </div>
-          <CardTitle className="text-2xl">Salon Commissions</CardTitle>
-          <CardDescription>Sign in to manage staff earnings & payroll</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-8">
           <form onSubmit={handleSignIn} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -59,7 +66,7 @@ function AuthPage() {
               {busy ? "Signing in…" : "Sign in"}
             </Button>
             <p className="text-xs text-muted-foreground text-center">
-              Use your existing Salon Management account. Access is granted based on your role.
+              Use your existing Charme account. Access is granted based on your role.
             </p>
           </form>
         </CardContent>

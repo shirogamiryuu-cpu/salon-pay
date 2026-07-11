@@ -2,8 +2,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, Scissors, LayoutDashboard, Settings, DollarSign, Wallet, User, FileText, Sliders, Users } from "lucide-react";
+import { LogOut, LayoutDashboard, Settings, DollarSign, Wallet, User, FileText, Sliders, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CharmeLogo } from "@/components/CharmeLogo";
 
 interface NavItem {
   to: string;
@@ -29,19 +30,18 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
   }
 
   return (
-    <div className="min-h-screen bg-muted/20">
+    <div className="min-h-screen bg-muted/40">
       {/* Top bar */}
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-        <div className="flex h-14 items-center justify-between px-4 lg:px-6">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
-              <Scissors className="h-4 w-4 text-primary" />
+      <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
+        <div className="flex h-16 items-center justify-between px-4 lg:px-6">
+          <Link to="/" className="flex items-center gap-3">
+            <CharmeLogo size="sm" tagline={false} />
+            <div className="hidden sm:block h-6 w-px bg-border" />
+            <div className="hidden sm:block">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">{title}</div>
+              <div className="font-serif-italic italic text-[11px] text-primary/80 leading-none">beautify with confidence</div>
             </div>
-            <div>
-              <div className="text-sm font-semibold leading-none">{title}</div>
-              <div className="text-[11px] text-muted-foreground">Commission System</div>
-            </div>
-          </div>
+          </Link>
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline text-xs text-muted-foreground max-w-[180px] truncate">{user?.email}</span>
             <Button size="sm" variant="ghost" onClick={handleSignOut}>
@@ -50,8 +50,10 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
             </Button>
           </div>
         </div>
+        {/* Gold divider (brand accent) */}
+        <div className="h-[2px] w-full" style={{ background: "var(--gradient-gold)" }} />
         {/* Mobile nav */}
-        <nav className="flex lg:hidden overflow-x-auto border-t">
+        <nav className="flex lg:hidden overflow-x-auto border-t bg-background">
           {nav.map((item) => {
             const active = isActive(item.to);
             const Icon = item.icon;
@@ -74,7 +76,7 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="hidden lg:flex w-56 flex-col border-r bg-background min-h-[calc(100vh-3.5rem)] sticky top-14">
+        <aside className="hidden lg:flex w-60 flex-col border-r bg-sidebar min-h-[calc(100vh-4.125rem)] sticky top-[4.125rem]">
           <nav className="p-3 space-y-1">
             {nav.map((item) => {
               const active = isActive(item.to);
@@ -84,8 +86,10 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
                   key={item.to}
                   to={item.to}
                   className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                    active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors relative",
+                    active
+                      ? "bg-primary/10 text-primary before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[3px] before:rounded-full before:bg-primary"
+                      : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
                   )}
                 >
                   <Icon className="h-4 w-4" />
