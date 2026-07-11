@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Printer, ArrowLeft } from "lucide-react";
+import { CharmeLogo } from "@/components/CharmeLogo";
 import { format } from "date-fns";
 
 export default StaffInvoiceDetail;
@@ -69,10 +70,14 @@ function StaffInvoiceDetail() {
 
       <Card className="print:shadow-none print:border-0">
         <CardContent className="p-8 space-y-6">
+          <div className="flex flex-col items-center pb-4">
+            <CharmeLogo size="md" />
+            <div className="h-[2px] w-24 mt-3" style={{ background: "var(--gradient-gold)" }} />
+          </div>
           <div className="flex justify-between items-start border-b pb-6">
             <div>
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">Commission Invoice</div>
-              <h1 className="text-3xl font-bold mt-1">{label}</h1>
+              <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Commission Invoice</div>
+              <h1 className="text-3xl font-display mt-1">{label}</h1>
             </div>
             <div className="text-right">
               <div className="text-sm font-medium">{data.profile?.name ?? data.profile?.email}</div>
