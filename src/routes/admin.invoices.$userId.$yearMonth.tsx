@@ -9,6 +9,7 @@ import { Loader2, Printer, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { CharmeLogo } from "@/components/CharmeLogo";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { useInvoiceSettings, paperPrintCss, DEFAULT_INVOICE_SETTINGS } from "@/hooks/useInvoiceSettings";
 
 export default InvoiceDetail;
 
@@ -84,12 +85,18 @@ function InvoiceDetail() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const { data: settingsData } = useInvoiceSettings();
+  const s = settingsData ?? DEFAULT_INVOICE_SETTINGS;
+  const cur = (n: number) => `${s.currency}${n.toFixed(2)}`;
+
   if (isLoading || !data) {
     return <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
   }
 
+  const colSpan = 2 + (s.show_rate ? 1 : 0) + 1; // Date, Package, [Rate], Revenue
   return (
     <div className="space-y-6">
+      <style>{paperPrintCss(s.paper)}</style>
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <Button asChild variant="ghost" size="sm">
           <Link to="/admin/invoices"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Link>
@@ -98,7 +105,7 @@ function InvoiceDetail() {
           {totals.unpaid > 0 && (
             <Button onClick={() => markPaid.mutate()} disabled={markPaid.isPending}>
               <CheckCircle2 className="h-4 w-4 mr-2" />
-              Mark ${totals.unpaid.toFixed(2)} as paid
+              Mark {cur(totals.unpaid)} as paid
             </Button>
           )}
           <Button variant="outline" onClick={() => window.print()}>
@@ -107,13 +114,16 @@ function InvoiceDetail() {
         </div>
       </div>
 
-      <Card className="print:shadow-none print:border-0">
-        <CardContent className="p-8 space-y-6">
+      <Card className="invoice-sheet print:shadow-none print:border-0">
+        <CardContent className="invoice-body p-8 space-y-6">
           <div className="flex flex-col items-center pb-4">
             <CharmeLogo size="md" />
             <div className="h-[2px] w-24 mt-3" style={{ background: "var(--gradient-gold)" }} />
+            <div className="mt-2 text-sm font-medium">{s.salon_name}</div>
+            {s.address && <div className="text-xs text-muted-foreground text-center whitespace-pre-line">{s.address}</div>}
+            {s.phone && <div className="text-xs text-muted-foreground">{s.phone}</div>}
           </div>
-          <div className="flex justify-between items-start border-b pb-6">
+          <div className="flex justify-between items-start border-b pb-6 gap-4">
             <div>
               <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Commission Invoice</div>
               <h1 className="text-3xl font-display mt-1">{label}</h1>
@@ -128,8 +138,8 @@ function InvoiceDetail() {
 
           <div className="grid grid-cols-3 gap-4">
             <div><div className="text-xs text-muted-foreground">Sessions</div><div className="text-2xl font-bold">{totals.count}</div></div>
-            <div><div className="text-xs text-muted-foreground">Total revenue</div><div className="text-2xl font-bold">${totals.revenue.toFixed(2)}</div></div>
-            <div><div className="text-xs text-muted-foreground">Commission</div><div className="text-2xl font-bold text-primary">${totals.commission.toFixed(2)}</div></div>
+            <div><div className="text-xs text-muted-foreground">Total revenue</div><div className="text-2xl font-bold">{cur(totals.revenue)}</div></div>
+            <div><div className="text-xs text-muted-foreground">Commission</div><div className="text-2xl font-bold text-primary">{cur(totals.commission)}</div></div>
           </div>
 
           {data.entries.length === 0 ? (
@@ -142,9 +152,9 @@ function InvoiceDetail() {
                     <th className="text-left py-2">Date</th>
                     <th className="text-left py-2">Package</th>
                     <th className="text-right py-2">Revenue</th>
-                    <th className="text-right py-2">Rate</th>
+                    {s.show_rate && <th className="text-right py-2">Rate</th>}
                     <th className="text-right py-2">Commission</th>
-                    <th className="text-left py-2">Status</th>
+                    {s.show_status && <th className="text-left py-2">Status</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -154,32 +164,40 @@ function InvoiceDetail() {
                       <tr key={e.id}>
                         <td className="py-2 whitespace-nowrap">{format(new Date(e.earned_at), "MMM d")}</td>
                         <td className="py-2">{pkg?.name ?? "—"}</td>
-                        <td className="py-2 text-right font-mono">${Number(e.session_revenue).toFixed(2)}</td>
-                        <td className="py-2 text-right text-xs text-muted-foreground">
-                          {e.commission_type === "percentage" ? `${e.commission_value}%` : `$${e.commission_value}`}
-                        </td>
-                        <td className="py-2 text-right font-mono font-semibold">${Number(e.commission_amount).toFixed(2)}</td>
-                        <td className="py-2"><Badge variant={e.status === "paid" ? "default" : "outline"} className="capitalize">{e.status}</Badge></td>
+                        <td className="py-2 text-right font-mono">{cur(Number(e.session_revenue))}</td>
+                        {s.show_rate && (
+                          <td className="py-2 text-right text-xs text-muted-foreground">
+                            {e.commission_type === "percentage" ? `${e.commission_value}%` : `${s.currency}${e.commission_value}`}
+                          </td>
+                        )}
+                        <td className="py-2 text-right font-mono font-semibold">{cur(Number(e.commission_amount))}</td>
+                        {s.show_status && (
+                          <td className="py-2"><Badge variant={e.status === "paid" ? "default" : "outline"} className="capitalize">{e.status}</Badge></td>
+                        )}
                       </tr>
                     );
                   })}
                 </tbody>
                 <tfoot>
                   <tr className="border-t-2">
-                    <td colSpan={4} className="pt-3 text-right font-semibold">Total</td>
-                    <td className="pt-3 text-right font-mono font-bold text-lg">${totals.commission.toFixed(2)}</td>
-                    <td></td>
+                    <td colSpan={colSpan} className="pt-3 text-right font-semibold">Total</td>
+                    <td className="pt-3 text-right font-mono font-bold text-lg">{cur(totals.commission)}</td>
+                    {s.show_status && <td></td>}
                   </tr>
                   {totals.unpaid > 0 && (
                     <tr>
-                      <td colSpan={4} className="pt-1 text-right text-xs text-amber-600">Unpaid</td>
-                      <td className="pt-1 text-right font-mono text-amber-600">${totals.unpaid.toFixed(2)}</td>
-                      <td></td>
+                      <td colSpan={colSpan} className="pt-1 text-right text-xs text-amber-600">Unpaid</td>
+                      <td className="pt-1 text-right font-mono text-amber-600">{cur(totals.unpaid)}</td>
+                      {s.show_status && <td></td>}
                     </tr>
                   )}
                 </tfoot>
               </table>
             </div>
+          )}
+
+          {s.footer && (
+            <div className="pt-6 border-t text-xs text-muted-foreground text-center whitespace-pre-line">{s.footer}</div>
           )}
         </CardContent>
       </Card>
