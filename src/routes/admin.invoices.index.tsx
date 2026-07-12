@@ -174,10 +174,15 @@ function InvoicesPage() {
             <div className="p-10 text-center text-sm text-muted-foreground">No commissions in this period.</div>
           ) : (
             <div className="divide-y">
-              {data.map((r) => (
+              {data.map((r) => {
+                const qs =
+                  mode === "month"
+                    ? `?mode=month&from=${ym}`
+                    : `?mode=custom&from=${from}&to=${to}`;
+                return (
                 <Link
                   key={r.staff_user_id}
-                  to={`/admin/invoices/${r.staff_user_id}/${mode === "month" ? ym : format(new Date(start), "yyyy-MM")}`}
+                  to={`/admin/invoices/${r.staff_user_id}${qs}`}
                   className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors"
                 >
                   <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
@@ -193,7 +198,8 @@ function InvoicesPage() {
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </Link>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>

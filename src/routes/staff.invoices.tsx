@@ -60,7 +60,7 @@ function StaffInvoices() {
               {months.map((m) => (
                 <Link
                   key={m.ym}
-                  to={`/staff/invoices/${m.ym}`}
+                  to={`/staff/invoices/view?mode=month&from=${m.ym}`}
                   className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors"
                 >
                   <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">

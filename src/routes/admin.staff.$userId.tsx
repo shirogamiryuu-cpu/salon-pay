@@ -98,7 +98,7 @@ function StaffDetailPage() {
                     {m.unpaid > 0 && <div className="text-xs text-amber-600">${m.unpaid.toFixed(2)} unpaid</div>}
                   </div>
                   <Button asChild size="sm" variant="outline">
-                    <Link to={`/admin/invoices/${userId}/${m.ym}`}>
+                    <Link to={`/admin/invoices/${userId}?mode=month&from=${m.ym}`}>
                       <FileText className="h-4 w-4 mr-1" /> Invoice
                     </Link>
                   </Button>
@@ -126,11 +126,13 @@ function StaffDetailPage() {
                     <th className="text-right p-3">Rate</th>
                     <th className="text-right p-3">Commission</th>
                     <th className="text-left p-3">Status</th>
+                    <th className="p-3"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {data.entries.map((e) => {
                     const pkg = e.packages as { name?: string } | null;
+                    const day = format(new Date(e.earned_at), "yyyy-MM-dd");
                     return (
                       <tr key={e.id}>
                         <td className="p-3 whitespace-nowrap">{format(new Date(e.earned_at), "MMM d, yyyy")}</td>
@@ -141,6 +143,21 @@ function StaffDetailPage() {
                         </td>
                         <td className="p-3 text-right font-mono font-semibold">${Number(e.commission_amount).toFixed(2)}</td>
                         <td className="p-3"><Badge variant={e.status === "paid" ? "default" : e.status === "included" ? "secondary" : "outline"} className="capitalize">{e.status}</Badge></td>
+                        <td className="p-3 text-right">
+                          {e.usage_log_id ? (
+                            <Button asChild size="sm" variant="ghost">
+                              <Link to={`/admin/invoices/${userId}?session=${e.usage_log_id}`}>
+                                <FileText className="h-3.5 w-3.5" />
+                              </Link>
+                            </Button>
+                          ) : (
+                            <Button asChild size="sm" variant="ghost">
+                              <Link to={`/admin/invoices/${userId}?mode=day&from=${day}`}>
+                                <FileText className="h-3.5 w-3.5" />
+                              </Link>
+                            </Button>
+                          )}
+                        </td>
                       </tr>
                     );
                   })}

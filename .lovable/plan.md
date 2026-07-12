@@ -1,40 +1,34 @@
-# Apply Charme Branding
+## 1. Invoice logo
 
-Rebrand the Salon Commission Management app to match the Charme Branding Guidelines 2015.
+- Upload the empire Charme logo via `lovable-assets` and store the pointer at `src/assets/empire-charme-logo.png.asset.json`.
+- Add an `invoice_logo_url` field to `app_settings` (default = uploaded asset URL) and expose it in `useInvoiceSettings` + Admin → Settings → Invoice layout (with a text field so a different URL can be swapped in later).
+- Render the logo centered above the tagline/wordmark in both invoice routes (`admin.invoices.$userId.$yearMonth.tsx` and `staff.invoices.$yearMonth.tsx`), sized ~120px, print-safe.
 
-## Brand tokens (from the guidelines)
+*(Requires you to re-upload the logo file — I don't see it in the current uploads.)*
 
-- **Primary (gold)**: Pantone 871C → approx `#B8955A` (CMYK 15/30/80/10). Tints for surfaces: `#C7A76F`, `#DCC69A`, `#EFE4CC`.
-- **Neutrals**: white `#FFFFFF`, Cool Gray 7C `#8C8C8C` (K40), Cool Gray 11C `#333333` (K85).
-- **Background rule**: prefer white; when dark is needed, use dark grey (`#333333`) — never pure black.
-- **Gradient accent** (gold horizontal bar) available for hero/section accents.
-- **Type**: Display = Didot (Bold) via `Didot`, fallback `"GFS Didot"` from Google Fonts. Italic accent = `Bodoni Moda` italic. Body = `"Avenir Next"` with fallback `"Nunito Sans"` from Google Fonts.
-- **Motif**: the 20° rotated "slash/twinkle" pattern — reused as a subtle background texture at low opacity on auth screen and empty states.
-- **Wordmark**: "CHARME" in Didot Bold with tagline *"beautify with confidence"* in Bodoni italic underneath.
+## 2. Flexible invoice ranges (day / session / month)
 
-## Changes
+Refactor the per-person invoice route to accept an arbitrary date range and optional single-session filter, driven by URL query params so links stay shareable and printable.
 
-1. **`src/styles.css`** — replace the slate palette with the Charme tokens.
-   - `--background` white, `--foreground` `#333333`.
-   - `--primary` gold `#B8955A` with `--primary-foreground` white.
-   - `--accent` warm cream `#EFE4CC`, `--muted` `#F7F2EA`.
-   - `--border`/`--input` soft warm gray.
-   - Dark mode uses dark grey (not black) surfaces with gold accents.
-   - Add `--gradient-gold`, `--shadow-elegant`, `--font-display`, `--font-serif-italic`, `--font-body` tokens.
-   - Register the new font tokens in `@theme inline`.
-   - Import Google Fonts (`GFS Didot`, `Bodoni Moda`, `Nunito Sans`) via `<link>` in `index.html`.
+**New URL shape** (replaces the current `$yearMonth` param):
 
-2. **`index.html`** — add Google Font links, update `<title>` to "Charme — Commission Management", update meta description and theme-color to gold `#B8955A`.
+```
+/admin/invoices/:userId?from=YYYY-MM-DD&to=YYYY-MM-DD
+/admin/invoices/:userId?session=<usage_log_id>
+/staff/invoices?from=...&to=...            (same pattern for staff)
+```
 
-3. **`src/components/AppShell.tsx`** — swap the scissors-in-square logo for the Charme wordmark: "CHARME" in Didot with the "beautify with confidence" italic tagline. Active nav uses gold underline/left-bar instead of the current slate. Sidebar background stays white with a subtle warm tint.
+Backwards-compat: if `from`/`to` are missing, fall back to the current month.
 
-4. **`src/routes/auth.tsx`** — hero card uses the Charme wordmark, a low-opacity twinkle-pattern SVG background (inline, 20° rotated), gold primary button, italic tagline.
+**Invoice list page (`admin.invoices.index.tsx`)** — already has Month vs Date-range toggle. Update the row links to pass `from`/`to` through instead of `yyyy-MM`, and keep the existing presets (This month / Last month / Last 30 days) plus add **Today** and **Yesterday**.
 
-5. **New `src/components/CharmeLogo.tsx`** — reusable wordmark component (Didot "CHARME" + italic tagline) used in AppShell, auth, and printable invoices.
+**Invoice detail page** — add a compact range picker at the top (Day / Month / Custom range / Single session) that rewrites the query string. When `session=<id>` is set, the query filters `commission_entries` by `usage_log_id` and the header shows the session date/time instead of a period label. The invoice number becomes `<fromYYYYMMDD>-<toYYYYMMDD>-<userShort>` (or `<sessionShort>-<userShort>` for single-session).
 
-6. **Printable invoices** (`admin.invoices.$userId.$yearMonth.tsx`, `staff.invoices.$yearMonth.tsx`) — add the Charme wordmark header and gold divider so printed invoices carry the brand.
+**Staff-side (`staff.invoices.tsx` + detail)** — same range picker, scoped to the signed-in staff user.
 
-7. **Favicon** — generate a small gold "C" mark PNG (Didot style) and wire it in `index.html` per favicon rules; remove `public/favicon.ico`.
+## Technical notes
 
-## Out of scope
-No business logic, database, or route structure changes — this is purely visual rebrand.
+- Query change: `commission_entries` filter switches from month-boundary math to `earned_at >= from AND earned_at < to+1day`, or `usage_log_id = ?` for single-session mode.
+- "Mark as paid" logic stays the same (operates on whatever unpaid IDs are in the current view).
+- No schema migration needed beyond the optional `invoice_logo_url` app_setting row.
+- No changes to the commission trigger or business logic.

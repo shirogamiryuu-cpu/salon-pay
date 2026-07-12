@@ -12,6 +12,7 @@ export type InvoiceSettings = {
   show_rate: boolean;
   show_status: boolean;
   paper: "a4" | "letter" | "receipt80";
+  logo_url: string;
 };
 
 export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
@@ -25,6 +26,7 @@ export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
   show_rate: true,
   show_status: true,
   paper: "a4",
+  logo_url: "",
 };
 
 export const INVOICE_KEYS = [
@@ -38,6 +40,7 @@ export const INVOICE_KEYS = [
   "invoice_show_rate",
   "invoice_show_status",
   "invoice_paper",
+  "invoice_logo_url",
 ] as const;
 
 function coerce(rows: Array<{ key: string; value: unknown }>): InvoiceSettings {
@@ -64,6 +67,7 @@ function coerce(rows: Array<{ key: string; value: unknown }>): InvoiceSettings {
     show_rate: b("invoice_show_rate", DEFAULT_INVOICE_SETTINGS.show_rate),
     show_status: b("invoice_show_status", DEFAULT_INVOICE_SETTINGS.show_status),
     paper: (paper === "letter" || paper === "receipt80" ? paper : "a4") as InvoiceSettings["paper"],
+    logo_url: s("invoice_logo_url", DEFAULT_INVOICE_SETTINGS.logo_url),
   };
 }
 

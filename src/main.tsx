@@ -63,6 +63,7 @@ createRoot(document.getElementById("root")!).render(
               </Route>
               <Route path="invoices" element={<AdminInvoicesLayout />}>
                 <Route index element={<AdminInvoicesIndex />} />
+                <Route path=":userId" element={<AdminInvoiceDetail />} />
                 <Route path=":userId/:yearMonth" element={<AdminInvoiceDetail />} />
               </Route>
             </Route>
@@ -70,6 +71,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/staff" element={<StaffLayout />}>
               <Route index element={<StaffIndex />} />
               <Route path="invoices" element={<StaffInvoices />} />
+              <Route path="invoices/view" element={<StaffInvoiceDetail />} />
               <Route path="invoices/:yearMonth" element={<StaffInvoiceDetail />} />
             </Route>
 

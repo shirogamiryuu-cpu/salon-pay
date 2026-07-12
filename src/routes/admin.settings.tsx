@@ -62,6 +62,7 @@ function SettingsPage() {
       show_rate: b("invoice_show_rate", DEFAULT_INVOICE_SETTINGS.show_rate),
       show_status: b("invoice_show_status", DEFAULT_INVOICE_SETTINGS.show_status),
       paper: (paper === "letter" || paper === "receipt80" ? paper : "a4") as InvoiceSettings["paper"],
+      logo_url: s("invoice_logo_url", DEFAULT_INVOICE_SETTINGS.logo_url),
     });
   }, [data]);
 
@@ -94,6 +95,7 @@ function SettingsPage() {
         { key: "invoice_show_rate", value: inv.show_rate },
         { key: "invoice_show_status", value: inv.show_status },
         { key: "invoice_paper", value: inv.paper },
+        { key: "invoice_logo_url", value: inv.logo_url },
       ];
       const { error } = await supabase.from("app_settings").upsert(rows, { onConflict: "key" });
       if (error) throw error;
@@ -160,6 +162,20 @@ function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2 md:col-span-2">
+              <Label>Logo image URL</Label>
+              <Input
+                value={inv.logo_url}
+                onChange={(e) => setInv({ ...inv, logo_url: e.target.value })}
+                placeholder="https://... (leave blank to hide)"
+              />
+              {inv.logo_url && (
+                <div className="flex items-center gap-3 rounded-md border p-2">
+                  <img src={inv.logo_url} alt="Logo preview" className="h-16 w-auto object-contain" />
+                  <div className="text-xs text-muted-foreground">Preview</div>
+                </div>
+              )}
+            </div>
             <div className="space-y-2">
               <Label>Salon name</Label>
               <Input value={inv.salon_name} onChange={(e) => setInv({ ...inv, salon_name: e.target.value })} />
