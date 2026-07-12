@@ -1,31 +1,47 @@
-
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 export default EarningsPage;
-
 
 function EarningsPage() {
   const [staffFilter, setStaffFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
+  const [addOpen, setAddOpen] = useState(false);
+  const qc = useQueryClient();
 
   const { data: staffOptions } = useQuery({
     queryKey: ["staff-options"],
     queryFn: async () => {
-      const { data: roles } = await supabase.from("user_roles").select("user_id").in("role", ["staff", "stylist"]);
+      const { data: roles } = await supabase.from("user_roles").select("user_id,role").in("role", ["staff", "stylist"]);
       const ids = Array.from(new Set((roles ?? []).map((r) => r.user_id)));
       if (ids.length === 0) return [];
       const { data: profs } = await supabase.from("profiles").select("id,name,email").in("id", ids);
-      return profs ?? [];
+      return (profs ?? []).map((p) => ({
+        ...p,
+        role: roles?.find((r) => r.user_id === p.id)?.role ?? "staff",
+      }));
+    },
+  });
+
+  const { data: packageOptions } = useQuery({
+    queryKey: ["package-options"],
+    queryFn: async () => {
+      const { data } = await supabase.from("packages").select("id,name,price").order("name");
+      return data ?? [];
     },
   });
 
@@ -56,11 +72,38 @@ function EarningsPage() {
     };
   }, [entries]);
 
+  const deleteEntry = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("commission_entries").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Entry deleted");
+      qc.invalidateQueries({ queryKey: ["earnings"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Staff Earnings</h1>
-        <p className="text-sm text-muted-foreground">Filter commission entries by staff, status and date.</p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold">Staff Earnings</h1>
+          <p className="text-sm text-muted-foreground">Filter commission entries by staff, status and date.</p>
+        </div>
+        <Dialog open={addOpen} onOpenChange={setAddOpen}>
+          <DialogTrigger asChild>
+            <Button><Plus className="h-4 w-4 mr-1" /> Add manual entry</Button>
+          </DialogTrigger>
+          <ManualEntryDialog
+            staffOptions={staffOptions ?? []}
+            packageOptions={packageOptions ?? []}
+            onDone={() => {
+              setAddOpen(false);
+              qc.invalidateQueries({ queryKey: ["earnings"] });
+            }}
+          />
+        </Dialog>
       </div>
 
       <Card>
@@ -125,16 +168,21 @@ function EarningsPage() {
                     <th className="text-right p-3">Rate</th>
                     <th className="text-right p-3">Commission</th>
                     <th className="text-left p-3">Status</th>
+                    <th className="p-3"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {entries.map((e) => {
                     const profile = e.profiles as { name?: string; email?: string } | null;
                     const pkg = e.packages as { name?: string } | null;
+                    const isManual = !e.usage_log_id && !e.session_deduction_request_id;
                     return (
                       <tr key={e.id}>
                         <td className="p-3 whitespace-nowrap">{format(new Date(e.earned_at), "MMM d, yyyy")}</td>
-                        <td className="p-3">{profile?.name ?? profile?.email ?? "—"}</td>
+                        <td className="p-3">
+                          {profile?.name ?? profile?.email ?? "—"}
+                          {isManual && <Badge variant="outline" className="ml-2 text-[10px]">manual</Badge>}
+                        </td>
                         <td className="p-3">{pkg?.name ?? "—"}</td>
                         <td className="p-3 text-right font-mono">${Number(e.session_revenue).toFixed(2)}</td>
                         <td className="p-3 text-right text-xs text-muted-foreground">
@@ -146,6 +194,19 @@ function EarningsPage() {
                             {e.status}
                           </Badge>
                         </td>
+                        <td className="p-3 text-right">
+                          {e.status !== "paid" && e.status !== "included" && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                if (confirm("Delete this commission entry?")) deleteEntry.mutate(e.id);
+                              }}
+                            >
+                              <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                            </Button>
+                          )}
+                        </td>
                       </tr>
                     );
                   })}
@@ -156,5 +217,122 @@ function EarningsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function ManualEntryDialog({
+  staffOptions,
+  packageOptions,
+  onDone,
+}: {
+  staffOptions: { id: string; name?: string | null; email?: string | null; role?: string }[];
+  packageOptions: { id: string; name: string; price: number }[];
+  onDone: () => void;
+}) {
+  const [staffId, setStaffId] = useState("");
+  const [packageId, setPackageId] = useState<string>("none");
+  const [earnedDate, setEarnedDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [revenue, setRevenue] = useState("0");
+  const [commissionType, setCommissionType] = useState<"percentage" | "flat">("flat");
+  const [commissionValue, setCommissionValue] = useState("0");
+  const [notes, setNotes] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const revenueNum = Number(revenue) || 0;
+  const valueNum = Number(commissionValue) || 0;
+  const computed = commissionType === "flat" ? valueNum : Math.round(revenueNum * valueNum) / 100;
+
+  async function submit() {
+    if (!staffId) return toast.error("Select a staff member");
+    if (computed <= 0) return toast.error("Commission amount must be greater than 0");
+    setSaving(true);
+    const { error } = await supabase.from("commission_entries").insert({
+      staff_user_id: staffId,
+      package_id: packageId === "none" ? null : packageId,
+      session_revenue: revenueNum,
+      commission_amount: computed,
+      commission_type: commissionType,
+      commission_value: valueNum,
+      status: "pending",
+      earned_at: new Date(earnedDate + "T12:00:00").toISOString(),
+    });
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success(notes ? "Manual entry added" : "Manual entry added");
+    onDone();
+  }
+
+  return (
+    <DialogContent className="max-w-md">
+      <DialogHeader>
+        <DialogTitle>Add manual commission</DialogTitle>
+      </DialogHeader>
+      <div className="space-y-3">
+        <div>
+          <Label>Staff</Label>
+          <Select value={staffId} onValueChange={setStaffId}>
+            <SelectTrigger><SelectValue placeholder="Select staff…" /></SelectTrigger>
+            <SelectContent>
+              {staffOptions.map((s) => (
+                <SelectItem key={s.id} value={s.id}>
+                  {s.name ?? s.email} <span className="text-xs text-muted-foreground ml-1">({s.role})</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>Package (optional)</Label>
+          <Select value={packageId} onValueChange={setPackageId}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">— None —</SelectItem>
+              {packageOptions.map((p) => (
+                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <Label>Date</Label>
+            <Input type="date" value={earnedDate} onChange={(e) => setEarnedDate(e.target.value)} />
+          </div>
+          <div>
+            <Label>Session revenue</Label>
+            <Input type="number" step="0.01" value={revenue} onChange={(e) => setRevenue(e.target.value)} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <Label>Type</Label>
+            <Select value={commissionType} onValueChange={(v) => setCommissionType(v as "percentage" | "flat")}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="flat">Flat amount</SelectItem>
+                <SelectItem value="percentage">Percentage</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>{commissionType === "flat" ? "Amount" : "Percent"}</Label>
+            <Input type="number" step="0.01" value={commissionValue} onChange={(e) => setCommissionValue(e.target.value)} />
+          </div>
+        </div>
+        <div>
+          <Label>Notes (optional)</Label>
+          <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Reason / correction reference" />
+        </div>
+        <div className="rounded-md bg-muted/50 p-3 text-sm flex justify-between">
+          <span className="text-muted-foreground">Commission total</span>
+          <span className="font-mono font-bold text-primary">${computed.toFixed(2)}</span>
+        </div>
+      </div>
+      <DialogFooter>
+        <Button onClick={submit} disabled={saving}>
+          {saving && <Loader2 className="h-4 w-4 mr-1 animate-spin" />} Save entry
+        </Button>
+      </DialogFooter>
+    </DialogContent>
   );
 }
