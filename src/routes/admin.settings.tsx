@@ -176,6 +176,7 @@ function SettingsPage() {
                 </div>
               )}
             </div>
+            <div className="space-y-2">
               <Label>Salon name</Label>
               <Input value={inv.salon_name} onChange={(e) => setInv({ ...inv, salon_name: e.target.value })} />
             </div>
