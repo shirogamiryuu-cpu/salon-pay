@@ -21,6 +21,7 @@ function EarningsPage() {
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
   const [addOpen, setAddOpen] = useState(false);
+  const [editEntry, setEditEntry] = useState<any | null>(null);
   const qc = useQueryClient();
 
   const { data: staffOptions } = useQuery({
