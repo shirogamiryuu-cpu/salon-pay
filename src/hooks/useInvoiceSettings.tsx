@@ -55,6 +55,8 @@ function coerce(rows: Array<{ key: string; value: unknown }>): InvoiceSettings {
   const paper = s("invoice_paper", DEFAULT_INVOICE_SETTINGS.paper);
   return {
     salon_name: s("invoice_salon_name", DEFAULT_INVOICE_SETTINGS.salon_name),
+    tagline: s("invoice_tagline", DEFAULT_INVOICE_SETTINGS.tagline),
+    branch: s("invoice_branch", DEFAULT_INVOICE_SETTINGS.branch),
     address: s("invoice_address", DEFAULT_INVOICE_SETTINGS.address),
     phone: s("invoice_phone", DEFAULT_INVOICE_SETTINGS.phone),
     footer: s("invoice_footer", DEFAULT_INVOICE_SETTINGS.footer),
