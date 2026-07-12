@@ -299,7 +299,7 @@ function ManualEntryDialog({
   return (
     <DialogContent className="max-w-md">
       <DialogHeader>
-        <DialogTitle>Add manual commission</DialogTitle>
+        <DialogTitle>{isEdit ? "Edit commission entry" : "Add manual commission"}</DialogTitle>
       </DialogHeader>
       <div className="space-y-3">
         <div>
