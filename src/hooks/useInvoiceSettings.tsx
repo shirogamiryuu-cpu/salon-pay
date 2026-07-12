@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type InvoiceSettings = {
   salon_name: string;
+  tagline: string;
+  branch: string;
   address: string;
   phone: string;
   footer: string;
@@ -13,11 +15,13 @@ export type InvoiceSettings = {
 };
 
 export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
-  salon_name: "Charme Salon",
-  address: "",
-  phone: "",
-  footer: "Thank you for your work this month.",
-  currency: "$",
+  salon_name: "CHARME",
+  tagline: "empire",
+  branch: "Yangon",
+  address: "No 33 Moe Kaung Street, Yangon, Yan Kin Township, 11081",
+  phone: "09779980556",
+  footer: "Thank you! See you again!",
+  currency: "MMK ",
   show_rate: true,
   show_status: true,
   paper: "a4",
@@ -25,6 +29,8 @@ export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
 
 export const INVOICE_KEYS = [
   "invoice_salon_name",
+  "invoice_tagline",
+  "invoice_branch",
   "invoice_address",
   "invoice_phone",
   "invoice_footer",
@@ -49,6 +55,8 @@ function coerce(rows: Array<{ key: string; value: unknown }>): InvoiceSettings {
   const paper = s("invoice_paper", DEFAULT_INVOICE_SETTINGS.paper);
   return {
     salon_name: s("invoice_salon_name", DEFAULT_INVOICE_SETTINGS.salon_name),
+    tagline: s("invoice_tagline", DEFAULT_INVOICE_SETTINGS.tagline),
+    branch: s("invoice_branch", DEFAULT_INVOICE_SETTINGS.branch),
     address: s("invoice_address", DEFAULT_INVOICE_SETTINGS.address),
     phone: s("invoice_phone", DEFAULT_INVOICE_SETTINGS.phone),
     footer: s("invoice_footer", DEFAULT_INVOICE_SETTINGS.footer),

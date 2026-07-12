@@ -53,6 +53,8 @@ function SettingsPage() {
     const paper = s("invoice_paper", DEFAULT_INVOICE_SETTINGS.paper);
     setInv({
       salon_name: s("invoice_salon_name", DEFAULT_INVOICE_SETTINGS.salon_name),
+      tagline: s("invoice_tagline", DEFAULT_INVOICE_SETTINGS.tagline),
+      branch: s("invoice_branch", DEFAULT_INVOICE_SETTINGS.branch),
       address: s("invoice_address", DEFAULT_INVOICE_SETTINGS.address),
       phone: s("invoice_phone", DEFAULT_INVOICE_SETTINGS.phone),
       footer: s("invoice_footer", DEFAULT_INVOICE_SETTINGS.footer),
@@ -83,6 +85,8 @@ function SettingsPage() {
     mutationFn: async () => {
       const rows = [
         { key: "invoice_salon_name", value: inv.salon_name },
+        { key: "invoice_tagline", value: inv.tagline },
+        { key: "invoice_branch", value: inv.branch },
         { key: "invoice_address", value: inv.address },
         { key: "invoice_phone", value: inv.phone },
         { key: "invoice_footer", value: inv.footer },
@@ -159,6 +163,14 @@ function SettingsPage() {
             <div className="space-y-2">
               <Label>Salon name</Label>
               <Input value={inv.salon_name} onChange={(e) => setInv({ ...inv, salon_name: e.target.value })} />
+            </div>
+            <div className="space-y-2">
+              <Label>Tagline (small, above name)</Label>
+              <Input value={inv.tagline} onChange={(e) => setInv({ ...inv, tagline: e.target.value })} placeholder="empire" />
+            </div>
+            <div className="space-y-2">
+              <Label>Branch</Label>
+              <Input value={inv.branch} onChange={(e) => setInv({ ...inv, branch: e.target.value })} placeholder="Yangon" />
             </div>
             <div className="space-y-2">
               <Label>Phone</Label>
