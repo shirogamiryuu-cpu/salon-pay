@@ -20,6 +20,24 @@ function InvoiceDetail() {
   const { userId = "", yearMonth } = useParams();
   const [search, setSearch] = useSearchParams();
   const qc = useQueryClient();
+  const [review, setReview] = useState(false);
+  const [editing, setEditing] = useState<{ id: string; amount: string } | null>(null);
+
+  const saveEdit = useMutation({
+    mutationFn: async (payload: { id: string; amount: number }) => {
+      const { error } = await supabase
+        .from("commission_entries")
+        .update({ commission_amount: payload.amount })
+        .eq("id", payload.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Entry updated");
+      setEditing(null);
+      qc.invalidateQueries({ queryKey: ["invoice"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const range = useMemo(
     () => resolveRange({ search, legacyYearMonth: yearMonth, userIdForNo: userId }),
