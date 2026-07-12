@@ -249,18 +249,23 @@ function EarningsPage() {
 function ManualEntryDialog({
   staffOptions,
   packageOptions,
+  entry,
   onDone,
 }: {
   staffOptions: { id: string; name?: string | null; email?: string | null; role?: string }[];
   packageOptions: { id: string; name: string; price: number }[];
+  entry?: any;
   onDone: () => void;
 }) {
-  const [staffId, setStaffId] = useState("");
-  const [packageId, setPackageId] = useState<string>("none");
-  const [earnedDate, setEarnedDate] = useState(format(new Date(), "yyyy-MM-dd"));
-  const [revenue, setRevenue] = useState("0");
-  const [commissionType, setCommissionType] = useState<"percentage" | "flat">("flat");
-  const [commissionValue, setCommissionValue] = useState("0");
+  const isEdit = !!entry;
+  const [staffId, setStaffId] = useState(entry?.staff_user_id ?? "");
+  const [packageId, setPackageId] = useState<string>(entry?.package_id ?? "none");
+  const [earnedDate, setEarnedDate] = useState(
+    entry?.earned_at ? format(new Date(entry.earned_at), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
+  );
+  const [revenue, setRevenue] = useState(entry ? String(entry.session_revenue ?? 0) : "0");
+  const [commissionType, setCommissionType] = useState<"percentage" | "flat">(entry?.commission_type ?? "flat");
+  const [commissionValue, setCommissionValue] = useState(entry ? String(entry.commission_value ?? 0) : "0");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -272,21 +277,24 @@ function ManualEntryDialog({
     if (!staffId) return toast.error("Select a staff member");
     if (computed <= 0) return toast.error("Commission amount must be greater than 0");
     setSaving(true);
-    const { error } = await supabase.from("commission_entries").insert({
+    const payload = {
       staff_user_id: staffId,
       package_id: packageId === "none" ? null : packageId,
       session_revenue: revenueNum,
       commission_amount: computed,
       commission_type: commissionType,
       commission_value: valueNum,
-      status: "pending",
       earned_at: new Date(earnedDate + "T12:00:00").toISOString(),
-    });
+    };
+    const { error } = isEdit
+      ? await supabase.from("commission_entries").update(payload).eq("id", entry.id)
+      : await supabase.from("commission_entries").insert({ ...payload, status: "pending" });
     setSaving(false);
     if (error) return toast.error(error.message);
-    toast.success(notes ? "Manual entry added" : "Manual entry added");
+    toast.success(isEdit ? "Entry updated" : "Manual entry added");
     onDone();
   }
+
 
   return (
     <DialogContent className="max-w-md">
