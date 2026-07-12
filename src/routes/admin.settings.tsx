@@ -62,6 +62,7 @@ function SettingsPage() {
       show_rate: b("invoice_show_rate", DEFAULT_INVOICE_SETTINGS.show_rate),
       show_status: b("invoice_show_status", DEFAULT_INVOICE_SETTINGS.show_status),
       paper: (paper === "letter" || paper === "receipt80" ? paper : "a4") as InvoiceSettings["paper"],
+      logo_url: s("invoice_logo_url", DEFAULT_INVOICE_SETTINGS.logo_url),
     });
   }, [data]);
 
