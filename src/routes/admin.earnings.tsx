@@ -107,6 +107,20 @@ function EarningsPage() {
         </Dialog>
       </div>
 
+      <Dialog open={!!editEntry} onOpenChange={(o) => !o && setEditEntry(null)}>
+        {editEntry && (
+          <ManualEntryDialog
+            staffOptions={staffOptions ?? []}
+            packageOptions={packageOptions ?? []}
+            entry={editEntry}
+            onDone={() => {
+              setEditEntry(null);
+              qc.invalidateQueries({ queryKey: ["earnings"] });
+            }}
+          />
+        )}
+      </Dialog>
+
       <Card>
         <CardContent className="p-4 grid gap-3 grid-cols-2 lg:grid-cols-4">
           <div>
