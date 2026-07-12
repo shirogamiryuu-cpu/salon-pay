@@ -6,7 +6,6 @@ import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, Printer, ArrowLeft, FileText } from "lucide-react";
-import { Link as RouterLink } from "react-router-dom";
 import { format } from "date-fns";
 import { useInvoiceSettings, paperPrintCss, DEFAULT_INVOICE_SETTINGS } from "@/hooks/useInvoiceSettings";
 import { resolveRange } from "@/lib/invoice-range";
