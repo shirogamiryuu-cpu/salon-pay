@@ -253,6 +253,32 @@ function InvoiceDetail() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader><DialogTitle>Edit commission amount</DialogTitle></DialogHeader>
+          {editing && (
+            <div className="space-y-2">
+              <Label className="text-xs">Amount ({s.currency.trim() || ""})</Label>
+              <Input
+                type="number"
+                step="0.01"
+                value={editing.amount}
+                onChange={(e) => setEditing({ ...editing, amount: e.target.value })}
+              />
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button
+              onClick={() => editing && saveEdit.mutate({ id: editing.id, amount: Number(editing.amount) })}
+              disabled={saveEdit.isPending}
+            >
+              {saveEdit.isPending ? "Saving…" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
