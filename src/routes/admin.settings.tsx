@@ -85,6 +85,8 @@ function SettingsPage() {
     mutationFn: async () => {
       const rows = [
         { key: "invoice_salon_name", value: inv.salon_name },
+        { key: "invoice_tagline", value: inv.tagline },
+        { key: "invoice_branch", value: inv.branch },
         { key: "invoice_address", value: inv.address },
         { key: "invoice_phone", value: inv.phone },
         { key: "invoice_footer", value: inv.footer },
