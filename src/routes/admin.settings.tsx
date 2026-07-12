@@ -95,6 +95,7 @@ function SettingsPage() {
         { key: "invoice_show_rate", value: inv.show_rate },
         { key: "invoice_show_status", value: inv.show_status },
         { key: "invoice_paper", value: inv.paper },
+        { key: "invoice_logo_url", value: inv.logo_url },
       ];
       const { error } = await supabase.from("app_settings").upsert(rows, { onConflict: "key" });
       if (error) throw error;
