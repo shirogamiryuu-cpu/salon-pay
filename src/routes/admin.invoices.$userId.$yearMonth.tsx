@@ -116,7 +116,11 @@ function InvoiceDetail() {
         <Button asChild variant="ghost" size="sm">
           <Link to="/admin/invoices"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Link>
         </Button>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => setReview((v) => !v)}>
+            {review ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
+            {review ? "Hide review" : "Review & edit"}
+          </Button>
           {totals.unpaid > 0 && (
             <Button onClick={() => markPaid.mutate()} disabled={markPaid.isPending}>
               <CheckCircle2 className="h-4 w-4 mr-2" />
@@ -136,6 +140,12 @@ function InvoiceDetail() {
         session={range.session}
         onChange={(n) => applyChange(n)}
       />
+
+      {review && (
+        <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-800 print:hidden">
+          Review mode is on. Use the pencil icon to edit any row before printing. Changes save to the entry.
+        </div>
+      )}
 
       <Card className="invoice-sheet print:shadow-none print:border-0 max-w-2xl mx-auto">
         <CardContent className="invoice-body p-8 space-y-6">
@@ -176,6 +186,7 @@ function InvoiceDetail() {
                   <th className="text-left py-2 font-bold">Date</th>
                   <th className="text-right py-2 font-bold">Qty</th>
                   <th className="text-right py-2 font-bold">Subtotal</th>
+                  {review && <th className="py-2 print:hidden"></th>}
                 </tr>
               </thead>
               <tbody>
@@ -187,6 +198,21 @@ function InvoiceDetail() {
                       <td className="py-1.5 text-xs">{format(new Date(e.earned_at), "MMM d")}</td>
                       <td className="py-1.5 text-right">1</td>
                       <td className="py-1.5 text-right font-mono">{Number(e.commission_amount).toLocaleString()}</td>
+                      {review && (
+                        <td className="py-1.5 text-right print:hidden">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="icon" className="h-7 w-7" title="Edit"
+                              onClick={() => setEditing({ id: e.id, amount: String(e.commission_amount ?? 0) })}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            {e.usage_log_id && (
+                              <Button asChild variant="ghost" size="icon" className="h-7 w-7" title="Single-session invoice">
+                                <Link to={`?session=${e.usage_log_id}`}><FileText className="h-3.5 w-3.5" /></Link>
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   );
                 })}
