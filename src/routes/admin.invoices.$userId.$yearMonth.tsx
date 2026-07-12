@@ -137,14 +137,17 @@ function InvoiceDetail() {
       <Card className="invoice-sheet print:shadow-none print:border-0 max-w-2xl mx-auto">
         <CardContent className="invoice-body p-8 space-y-6">
           <div className="flex flex-col items-center text-center">
-            {s.logo_url && (
-              <img src={s.logo_url} alt="Logo" className="h-20 w-auto object-contain mb-3" />
+            {s.logo_url ? (
+              <img src={s.logo_url} alt={s.salon_name} className="h-24 w-auto object-contain mb-2" />
+            ) : (
+              <>
+                {s.tagline && (
+                  <div className="font-display italic text-primary text-lg -mb-1">{s.tagline}</div>
+                )}
+                <div className="text-3xl font-bold tracking-[0.35em]">{s.salon_name}</div>
+              </>
             )}
-            {s.tagline && (
-              <div className="font-display italic text-primary text-lg -mb-1">{s.tagline}</div>
-            )}
-            <div className="text-3xl font-bold tracking-[0.35em]">{s.salon_name}</div>
-            {s.branch && <div className="text-4xl font-bold mt-3">{s.branch}</div>}
+            {s.branch && <div className="text-4xl font-bold mt-1">{s.branch}</div>}
             {s.address && <div className="text-xs mt-2 whitespace-pre-line">{s.address}</div>}
             {s.phone && <div className="text-xs"><span className="font-semibold">Mobile:</span> {s.phone}</div>}
           </div>
