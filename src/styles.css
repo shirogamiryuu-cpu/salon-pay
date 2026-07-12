@@ -199,3 +199,23 @@
 @media print {
   .charme-pattern { background: white; }
 }
+
+/* Print isolation — only the invoice sheet prints */
+@media print {
+  @page { margin: 0; }
+  html, body { background: white !important; }
+  body * { visibility: hidden !important; }
+  .invoice-sheet, .invoice-sheet * { visibility: visible !important; }
+  .invoice-sheet {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    background: white !important;
+  }
+}
