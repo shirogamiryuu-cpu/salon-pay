@@ -165,6 +165,14 @@ function SettingsPage() {
               <Input value={inv.salon_name} onChange={(e) => setInv({ ...inv, salon_name: e.target.value })} />
             </div>
             <div className="space-y-2">
+              <Label>Tagline (small, above name)</Label>
+              <Input value={inv.tagline} onChange={(e) => setInv({ ...inv, tagline: e.target.value })} placeholder="empire" />
+            </div>
+            <div className="space-y-2">
+              <Label>Branch</Label>
+              <Input value={inv.branch} onChange={(e) => setInv({ ...inv, branch: e.target.value })} placeholder="Yangon" />
+            </div>
+            <div className="space-y-2">
               <Label>Phone</Label>
               <Input value={inv.phone} onChange={(e) => setInv({ ...inv, phone: e.target.value })} />
             </div>
