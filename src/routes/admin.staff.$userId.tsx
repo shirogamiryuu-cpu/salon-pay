@@ -98,7 +98,7 @@ function StaffDetailPage() {
                     {m.unpaid > 0 && <div className="text-xs text-amber-600">${m.unpaid.toFixed(2)} unpaid</div>}
                   </div>
                   <Button asChild size="sm" variant="outline">
-                    <Link to={`/admin/invoices/${userId}/${m.ym}`}>
+                    <Link to={`/admin/invoices/${userId}?mode=month&from=${m.ym}`}>
                       <FileText className="h-4 w-4 mr-1" /> Invoice
                     </Link>
                   </Button>
