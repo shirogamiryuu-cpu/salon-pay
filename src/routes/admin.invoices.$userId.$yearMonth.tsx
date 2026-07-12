@@ -93,7 +93,7 @@ function InvoiceDetail() {
     return <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
   }
 
-  const colSpan = 2 + (s.show_rate ? 1 : 0) + 1; // Date, Package, [Rate], Revenue
+  
   return (
     <div className="space-y-6">
       <style>{paperPrintCss(s.paper)}</style>
