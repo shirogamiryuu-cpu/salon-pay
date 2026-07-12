@@ -162,7 +162,20 @@ function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-2">
+              <Label>Logo image URL</Label>
+              <Input
+                value={inv.logo_url}
+                onChange={(e) => setInv({ ...inv, logo_url: e.target.value })}
+                placeholder="https://... (leave blank to hide)"
+              />
+              {inv.logo_url && (
+                <div className="flex items-center gap-3 rounded-md border p-2">
+                  <img src={inv.logo_url} alt="Logo preview" className="h-16 w-auto object-contain" />
+                  <div className="text-xs text-muted-foreground">Preview</div>
+                </div>
+              )}
+            </div>
               <Label>Salon name</Label>
               <Input value={inv.salon_name} onChange={(e) => setInv({ ...inv, salon_name: e.target.value })} />
             </div>
