@@ -114,90 +114,69 @@ function InvoiceDetail() {
         </div>
       </div>
 
-      <Card className="invoice-sheet print:shadow-none print:border-0">
+      <Card className="invoice-sheet print:shadow-none print:border-0 max-w-2xl mx-auto">
         <CardContent className="invoice-body p-8 space-y-6">
-          <div className="flex flex-col items-center pb-4">
-            <CharmeLogo size="md" />
-            <div className="h-[2px] w-24 mt-3" style={{ background: "var(--gradient-gold)" }} />
-            <div className="mt-2 text-sm font-medium">{s.salon_name}</div>
-            {s.address && <div className="text-xs text-muted-foreground text-center whitespace-pre-line">{s.address}</div>}
-            {s.phone && <div className="text-xs text-muted-foreground">{s.phone}</div>}
-          </div>
-          <div className="flex justify-between items-start border-b pb-6 gap-4">
-            <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Commission Invoice</div>
-              <h1 className="text-3xl font-display mt-1">{label}</h1>
-            </div>
-            <div className="text-right">
-              <div className="text-sm font-medium">{data.profile?.name ?? data.profile?.email}</div>
-              <div className="text-xs text-muted-foreground">{data.profile?.email}</div>
-              {data.profile?.phone && <div className="text-xs text-muted-foreground">{data.profile.phone}</div>}
-              <Badge variant="secondary" className="mt-2 capitalize">{data.role}</Badge>
-            </div>
+          <div className="flex flex-col items-center text-center">
+            {s.tagline && (
+              <div className="font-display italic text-primary text-lg -mb-1">{s.tagline}</div>
+            )}
+            <div className="text-3xl font-bold tracking-[0.35em]">{s.salon_name}</div>
+            {s.branch && <div className="text-4xl font-bold mt-3">{s.branch}</div>}
+            {s.address && <div className="text-xs mt-2 whitespace-pre-line">{s.address}</div>}
+            {s.phone && <div className="text-xs"><span className="font-semibold">Mobile:</span> {s.phone}</div>}
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div><div className="text-xs text-muted-foreground">Sessions</div><div className="text-2xl font-bold">{totals.count}</div></div>
-            <div><div className="text-xs text-muted-foreground">Total revenue</div><div className="text-2xl font-bold">{cur(totals.revenue)}</div></div>
-            <div><div className="text-xs text-muted-foreground">Commission</div><div className="text-2xl font-bold text-primary">{cur(totals.commission)}</div></div>
+          <div className="text-center text-2xl font-semibold">Invoice</div>
+
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div><span className="font-bold">Invoice No.</span> {yearMonth.replace("-", "")}-{userId.slice(0, 4).toUpperCase()}</div>
+            <div className="text-right"><span className="font-bold">Date</span> {format(new Date(), "MM/dd/yyyy")}</div>
+            <div><span className="font-bold">Staff</span></div>
+            <div className="text-right"><span className="font-bold capitalize">{data.role}:</span> {data.profile?.name ?? data.profile?.email}</div>
+            <div>{data.profile?.phone && <><span className="font-bold">Mobile:</span> {data.profile.phone}</>}</div>
+            <div className="text-right"><span className="font-bold">Period:</span> {label}</div>
           </div>
 
           {data.entries.length === 0 ? (
             <div className="p-10 text-center text-sm text-muted-foreground">No commissions in this month.</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="text-xs uppercase text-muted-foreground border-b">
-                  <tr>
-                    <th className="text-left py-2">Date</th>
-                    <th className="text-left py-2">Package</th>
-                    <th className="text-right py-2">Revenue</th>
-                    {s.show_rate && <th className="text-right py-2">Rate</th>}
-                    <th className="text-right py-2">Commission</th>
-                    {s.show_status && <th className="text-left py-2">Status</th>}
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {data.entries.map((e) => {
-                    const pkg = e.packages as { name?: string } | null;
-                    return (
-                      <tr key={e.id}>
-                        <td className="py-2 whitespace-nowrap">{format(new Date(e.earned_at), "MMM d")}</td>
-                        <td className="py-2">{pkg?.name ?? "—"}</td>
-                        <td className="py-2 text-right font-mono">{cur(Number(e.session_revenue))}</td>
-                        {s.show_rate && (
-                          <td className="py-2 text-right text-xs text-muted-foreground">
-                            {e.commission_type === "percentage" ? `${e.commission_value}%` : `${s.currency}${e.commission_value}`}
-                          </td>
-                        )}
-                        <td className="py-2 text-right font-mono font-semibold">{cur(Number(e.commission_amount))}</td>
-                        {s.show_status && (
-                          <td className="py-2"><Badge variant={e.status === "paid" ? "default" : "outline"} className="capitalize">{e.status}</Badge></td>
-                        )}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t-2">
-                    <td colSpan={colSpan} className="pt-3 text-right font-semibold">Total</td>
-                    <td className="pt-3 text-right font-mono font-bold text-lg">{cur(totals.commission)}</td>
-                    {s.show_status && <td></td>}
-                  </tr>
-                  {totals.unpaid > 0 && (
-                    <tr>
-                      <td colSpan={colSpan} className="pt-1 text-right text-xs text-amber-600">Unpaid</td>
-                      <td className="pt-1 text-right font-mono text-amber-600">{cur(totals.unpaid)}</td>
-                      {s.show_status && <td></td>}
+            <table className="w-full text-sm">
+              <thead className="border-b-2">
+                <tr>
+                  <th className="text-left py-2 font-bold">Product</th>
+                  <th className="text-right py-2 font-bold">Quantity</th>
+                  <th className="text-right py-2 font-bold">Unit Price</th>
+                  <th className="text-right py-2 font-bold">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.entries.map((e) => {
+                  const pkg = e.packages as { name?: string } | null;
+                  return (
+                    <tr key={e.id}>
+                      <td className="py-1.5">{pkg?.name ?? "—"}</td>
+                      <td className="py-1.5 text-right">1 Pc(s)</td>
+                      <td className="py-1.5 text-right font-mono">{Number(e.commission_amount).toLocaleString()}</td>
+                      <td className="py-1.5 text-right font-mono">{Number(e.commission_amount).toLocaleString()}</td>
                     </tr>
-                  )}
-                </tfoot>
-              </table>
-            </div>
+                  );
+                })}
+              </tbody>
+            </table>
           )}
 
+          <div className="border-t-2 pt-4 space-y-1 text-sm">
+            <div className="flex justify-between"><span className="font-bold">Subtotal:</span><span className="font-mono">{cur(totals.commission)}</span></div>
+            <div className="flex justify-between text-base"><span className="font-bold">Total:</span><span className="font-mono font-bold">{cur(totals.commission)}</span></div>
+            {totals.unpaid > 0 ? (
+              <div className="flex justify-between text-amber-600"><span className="font-bold">Unpaid:</span><span className="font-mono">{cur(totals.unpaid)}</span></div>
+            ) : (
+              <div className="flex justify-between"><span className="font-bold">Paid:</span><span className="font-mono">{cur(totals.commission)}</span></div>
+            )}
+          </div>
+
           {s.footer && (
-            <div className="pt-6 border-t text-xs text-muted-foreground text-center whitespace-pre-line">{s.footer}</div>
+            <div className="pt-6 text-sm text-center whitespace-pre-line">{s.footer}</div>
           )}
         </CardContent>
       </Card>
