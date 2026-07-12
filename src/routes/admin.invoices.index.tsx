@@ -198,7 +198,8 @@ function InvoicesPage() {
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </Link>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
