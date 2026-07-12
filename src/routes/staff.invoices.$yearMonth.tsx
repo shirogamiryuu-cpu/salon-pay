@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Printer, ArrowLeft } from "lucide-react";
+import { Loader2, Printer, ArrowLeft, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { useInvoiceSettings, paperPrintCss, DEFAULT_INVOICE_SETTINGS } from "@/hooks/useInvoiceSettings";
 import { resolveRange } from "@/lib/invoice-range";
@@ -136,6 +136,7 @@ function StaffInvoiceDetail() {
                   <th className="text-left py-2 font-bold">Date</th>
                   <th className="text-right py-2 font-bold">Qty</th>
                   <th className="text-right py-2 font-bold">Subtotal</th>
+                  <th className="py-2 print:hidden"></th>
                 </tr>
               </thead>
               <tbody>
@@ -147,6 +148,13 @@ function StaffInvoiceDetail() {
                       <td className="py-1.5 text-xs">{format(new Date(e.earned_at), "MMM d")}</td>
                       <td className="py-1.5 text-right">1</td>
                       <td className="py-1.5 text-right font-mono">{Number(e.commission_amount).toLocaleString()}</td>
+                      <td className="py-1.5 text-right print:hidden">
+                        {e.usage_log_id && (
+                          <Button asChild variant="ghost" size="icon" className="h-7 w-7" title="Single-session invoice">
+                            <Link to={`/staff/invoices/view?session=${e.usage_log_id}`}><FileText className="h-3.5 w-3.5" /></Link>
+                          </Button>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
