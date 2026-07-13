@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     user: session?.user ?? null,
     roles,
-    loading,
+    loading: loading || (!!session && rolesLoading),
     isAdmin: roles.includes("admin"),
     isStaff: roles.includes("staff") || roles.includes("stylist"),
     signOut: async () => {
