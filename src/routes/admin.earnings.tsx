@@ -161,8 +161,8 @@ function EarningsPage() {
 
       <div className="grid grid-cols-3 gap-4">
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Entries</div><div className="text-xl font-bold">{totals.count}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Revenue</div><div className="text-xl font-bold">${totals.revenue.toFixed(2)}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Commissions</div><div className="text-xl font-bold text-primary">${totals.total.toFixed(2)}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Revenue</div><div className="text-xl font-bold">MMK {totals.revenue.toFixed(2)}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Commissions</div><div className="text-xl font-bold text-primary">MMK {totals.total.toFixed(2)}</div></CardContent></Card>
       </div>
 
       <Card>
@@ -199,11 +199,11 @@ function EarningsPage() {
                           {isManual && <Badge variant="outline" className="ml-2 text-[10px]">manual</Badge>}
                         </td>
                         <td className="p-3">{pkg?.name ?? "—"}</td>
-                        <td className="p-3 text-right font-mono">${Number(e.session_revenue).toFixed(2)}</td>
+                        <td className="p-3 text-right font-mono">MMK {Number(e.session_revenue).toFixed(2)}</td>
                         <td className="p-3 text-right text-xs text-muted-foreground">
                           {e.commission_type === "percentage" ? `${e.commission_value}%` : `$${e.commission_value}`}
                         </td>
-                        <td className="p-3 text-right font-mono font-semibold">${Number(e.commission_amount).toFixed(2)}</td>
+                        <td className="p-3 text-right font-mono font-semibold">MMK {Number(e.commission_amount).toFixed(2)}</td>
                         <td className="p-3">
                           <Badge variant={e.status === "paid" ? "default" : e.status === "included" ? "secondary" : "outline"}>
                             {e.status}

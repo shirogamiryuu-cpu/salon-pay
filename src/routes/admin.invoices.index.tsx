@@ -137,17 +137,17 @@ function InvoicesPage() {
           {mode === "month" ? (
             <div className="space-y-1">
               <Label className="text-xs">Month</Label>
-              <Input type="month" value={ym} onChange={(e) => setYm(e.target.value)} className="w-[180px]" />
+              <Input type="month" value={ym} onChange={(e) => setYm(e.target.value)} className="w-45" />
             </div>
           ) : (
             <>
               <div className="space-y-1">
                 <Label className="text-xs">From</Label>
-                <Input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)} className="w-[160px]" />
+                <Input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)} className="w-40" />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">To</Label>
-                <Input type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)} className="w-[160px]" />
+                <Input type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)} className="w-40" />
               </div>
             </>
           )}
@@ -162,8 +162,8 @@ function InvoicesPage() {
 
       <div className="grid grid-cols-3 gap-4">
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">People</div><div className="text-xl font-bold">{totals.people}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total commissions</div><div className="text-xl font-bold text-primary">${totals.commission.toFixed(2)}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Unpaid</div><div className="text-xl font-bold text-amber-600">${totals.unpaid.toFixed(2)}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total commissions</div><div className="text-xl font-bold text-primary">MMK {totals.commission.toFixed(2)}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Unpaid</div><div className="text-xl font-bold text-amber-600">MMK {totals.unpaid.toFixed(2)}</div></CardContent></Card>
       </div>
 
       <Card>
@@ -190,11 +190,11 @@ function InvoicesPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{r.name}</div>
-                    <div className="text-xs text-muted-foreground">{r.sessions} sessions · ${r.revenue.toFixed(2)} revenue</div>
+                    <div className="text-xs text-muted-foreground">{r.sessions} sessions · MMK {r.revenue.toFixed(2)} revenue</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono font-semibold">${r.commission.toFixed(2)}</div>
-                    {r.unpaid > 0 && <div className="text-xs text-amber-600">${r.unpaid.toFixed(2)} unpaid</div>}
+                    <div className="font-mono font-semibold">MMK {r.commission.toFixed(2)}</div>
+                    {r.unpaid > 0 && <div className="text-xs text-amber-600">MMK {r.unpaid.toFixed(2)} unpaid</div>}
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </Link>

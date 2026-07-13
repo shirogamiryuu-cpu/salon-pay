@@ -80,8 +80,8 @@ function StaffListPage() {
                     <div className="text-xs text-muted-foreground truncate">{s.email} · {s.sessions} sessions</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono font-semibold">${s.total.toFixed(2)}</div>
-                    {s.unpaid > 0 && <div className="text-xs text-amber-600">${s.unpaid.toFixed(2)} unpaid</div>}
+                    <div className="font-mono font-semibold">MMK {s.total.toFixed(2)}</div>
+                    {s.unpaid > 0 && <div className="text-xs text-amber-600">MMK {s.unpaid.toFixed(2)} unpaid</div>}
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </Link>

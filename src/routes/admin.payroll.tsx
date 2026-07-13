@@ -219,7 +219,7 @@ function PayrollPage() {
             ) : !runs?.length ? (
               <div className="p-10 text-center text-sm text-muted-foreground">No payroll runs yet.</div>
             ) : (
-              <div className="divide-y max-h-[500px] overflow-y-auto">
+              <div className="divide-y max-h-125 overflow-y-auto">
                 {runs.map((r) => (
                   <button
                     key={r.id}
@@ -234,7 +234,7 @@ function PayrollPage() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-mono font-semibold">${Number(r.total_amount).toFixed(2)}</div>
+                        <div className="font-mono font-semibold">MMK {Number(r.total_amount).toFixed(2)}</div>
                         <Badge variant={r.status === "paid" ? "default" : r.status === "approved" ? "secondary" : "outline"} className="mt-1">
                           {r.status}
                         </Badge>
@@ -277,7 +277,7 @@ function PayrollPage() {
                         <div className="font-medium">{p?.name ?? p?.email ?? "Staff"}</div>
                         <div className="text-xs text-muted-foreground">{it.entries_count} sessions</div>
                       </div>
-                      <div className="font-mono font-semibold">${Number(it.net_amount).toFixed(2)}</div>
+                      <div className="font-mono font-semibold">MMK{Number(it.net_amount).toFixed(2)}</div>
                     </div>
                   );
                 })}

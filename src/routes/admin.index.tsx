@@ -57,9 +57,9 @@ function AdminDashboard() {
   }
 
   const stats = [
-    { label: "Total Commissions (30d)", value: `$${data.totalCommissions.toFixed(2)}`, icon: DollarSign, tint: "text-emerald-600 bg-emerald-50" },
-    { label: "Pending Payout", value: `$${data.pendingAmount.toFixed(2)}`, icon: TrendingUp, tint: "text-amber-600 bg-amber-50" },
-    { label: "Paid Out (30d)", value: `$${data.paidAmount.toFixed(2)}`, icon: Wallet, tint: "text-blue-600 bg-blue-50" },
+    { label: "Total Commissions (30d)", value: `MMK ${data.totalCommissions.toFixed(2)}`, icon: DollarSign, tint: "text-emerald-600 bg-emerald-50" },
+    { label: "Pending Payout", value: `MMK ${data.pendingAmount.toFixed(2)}`, icon: TrendingUp, tint: "text-amber-600 bg-amber-50" },
+    { label: "Paid Out (30d)", value: `MMK ${data.paidAmount.toFixed(2)}`, icon: Wallet, tint: "text-blue-600 bg-blue-50" },
     { label: "Active Staff", value: String(data.staffCount), icon: Users, tint: "text-purple-600 bg-purple-50" },
   ];
 
@@ -102,7 +102,7 @@ function AdminDashboard() {
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                 <XAxis dataKey="day" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
                 <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(v: number) => `$${v.toFixed(2)}`} />
+                <Tooltip formatter={(v: number) => `MMK ${v.toFixed(2)}`} />
                 <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -125,7 +125,7 @@ function AdminDashboard() {
                     <div className="font-medium">{format(new Date(r.created_at), "MMM d, yyyy")}</div>
                     <div className="text-xs text-muted-foreground capitalize">{r.status}</div>
                   </div>
-                  <div className="font-mono">${Number(r.total_amount ?? 0).toFixed(2)}</div>
+                  <div className="font-mono">MMK {Number(r.total_amount ?? 0).toFixed(2)}</div>
                 </div>
               ))}
             </div>

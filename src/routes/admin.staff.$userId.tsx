@@ -72,10 +72,10 @@ function StaffDetailPage() {
           <div className="text-sm text-muted-foreground">{data.profile?.email}</div>
           <Badge variant="secondary" className="mt-2 capitalize">{data.role}</Badge>
         </div>
-        <div className="grid grid-cols-3 gap-3 min-w-[300px]">
+        <div className="grid grid-cols-3 gap-3 min-w-75">
           <Card><CardContent className="p-3"><div className="text-[11px] text-muted-foreground">Sessions</div><div className="text-lg font-bold">{totals.sessions}</div></CardContent></Card>
-          <Card><CardContent className="p-3"><div className="text-[11px] text-muted-foreground">Revenue</div><div className="text-lg font-bold">${totals.revenue.toFixed(2)}</div></CardContent></Card>
-          <Card><CardContent className="p-3"><div className="text-[11px] text-muted-foreground">Commission</div><div className="text-lg font-bold text-primary">${totals.commission.toFixed(2)}</div></CardContent></Card>
+          <Card><CardContent className="p-3"><div className="text-[11px] text-muted-foreground">Revenue</div><div className="text-lg font-bold">MMK {totals.revenue.toFixed(2)}</div></CardContent></Card>
+          <Card><CardContent className="p-3"><div className="text-[11px] text-muted-foreground">Commission</div><div className="text-lg font-bold text-primary">MMK {totals.commission.toFixed(2)}</div></CardContent></Card>
         </div>
       </div>
 
@@ -91,11 +91,11 @@ function StaffDetailPage() {
                 <div key={m.ym} className="p-4 flex items-center gap-4">
                   <div className="flex-1">
                     <div className="font-medium">{m.label}</div>
-                    <div className="text-xs text-muted-foreground">{m.sessions} sessions · ${m.revenue.toFixed(2)} revenue</div>
+                    <div className="text-xs text-muted-foreground">{m.sessions} sessions · MMK {m.revenue.toFixed(2)} revenue</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono font-semibold">${m.commission.toFixed(2)}</div>
-                    {m.unpaid > 0 && <div className="text-xs text-amber-600">${m.unpaid.toFixed(2)} unpaid</div>}
+                    <div className="font-mono font-semibold">MMK {m.commission.toFixed(2)}</div>
+                    {m.unpaid > 0 && <div className="text-xs text-amber-600">MMK {m.unpaid.toFixed(2)} unpaid</div>}
                   </div>
                   <Button asChild size="sm" variant="outline">
                     <Link to={`/admin/invoices/${userId}?mode=month&from=${m.ym}`}>
@@ -137,11 +137,11 @@ function StaffDetailPage() {
                       <tr key={e.id}>
                         <td className="p-3 whitespace-nowrap">{format(new Date(e.earned_at), "MMM d, yyyy")}</td>
                         <td className="p-3">{pkg?.name ?? "—"}</td>
-                        <td className="p-3 text-right font-mono">${Number(e.session_revenue).toFixed(2)}</td>
+                        <td className="p-3 text-right font-mono">MMK{Number(e.session_revenue).toFixed(2)}</td>
                         <td className="p-3 text-right text-xs text-muted-foreground">
                           {e.commission_type === "percentage" ? `${e.commission_value}%` : `$${e.commission_value}`}
                         </td>
-                        <td className="p-3 text-right font-mono font-semibold">${Number(e.commission_amount).toFixed(2)}</td>
+                        <td className="p-3 text-right font-mono font-semibold">MMK{Number(e.commission_amount).toFixed(2)}</td>
                         <td className="p-3"><Badge variant={e.status === "paid" ? "default" : e.status === "included" ? "secondary" : "outline"} className="capitalize">{e.status}</Badge></td>
                         <td className="p-3 text-right">
                           {e.usage_log_id ? (
