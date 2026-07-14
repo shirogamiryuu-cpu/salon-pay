@@ -289,23 +289,20 @@ function SessionInvoiceDetail() {
           )}
 
 
-          <div className="border-t-2 pt-4 space-y-1 text-sm">
-            <div className="flex justify-between">
-              <span className="font-bold">Total commission:</span>
-              <span className="font-mono font-bold">{cur(totals.commission)}</span>
-            </div>
-            {totals.unpaid > 0 ? (
-              <div className="flex justify-between text-amber-600">
-                <span className="font-bold">Unpaid:</span>
-                <span className="font-mono">{cur(totals.unpaid)}</span>
-              </div>
-            ) : (
+          {data.entries.length > 0 && (
+            <div className="border-t pt-3 space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="font-bold">Paid:</span>
-                <span className="font-mono">{cur(totals.commission)}</span>
+                <span className="font-bold">Total commission:</span>
+                <span className="font-mono font-bold">{cur(totals.commission)}</span>
               </div>
-            )}
-          </div>
+              {totals.unpaid > 0 && (
+                <div className="flex justify-between text-amber-600">
+                  <span className="font-bold">Unpaid:</span>
+                  <span className="font-mono">{cur(totals.unpaid)}</span>
+                </div>
+              )}
+            </div>
+          )}
 
           {s.footer && <div className="pt-6 text-sm text-center whitespace-pre-line">{s.footer}</div>}
         </CardContent>
