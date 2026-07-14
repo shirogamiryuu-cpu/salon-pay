@@ -64,6 +64,7 @@ createRoot(document.getElementById("root")!).render(
               </Route>
               <Route path="invoices" element={<AdminInvoicesLayout />}>
                 <Route index element={<AdminInvoicesIndex />} />
+                <Route path="session/:usageLogId" element={<AdminSessionInvoice />} />
                 <Route path=":userId" element={<AdminInvoiceDetail />} />
                 <Route path=":userId/:yearMonth" element={<AdminInvoiceDetail />} />
               </Route>
