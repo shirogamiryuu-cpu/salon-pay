@@ -22,6 +22,7 @@ import AdminStaffDetail from "./routes/admin.staff.$userId";
 import AdminInvoicesLayout from "./routes/admin.invoices";
 import AdminInvoicesIndex from "./routes/admin.invoices.index";
 import AdminInvoiceDetail from "./routes/admin.invoices.$userId.$yearMonth";
+import AdminSessionInvoice from "./routes/admin.invoices.session.$usageLogId";
 
 import StaffLayout from "./routes/staff";
 import StaffIndex from "./routes/staff.index";
@@ -63,6 +64,7 @@ createRoot(document.getElementById("root")!).render(
               </Route>
               <Route path="invoices" element={<AdminInvoicesLayout />}>
                 <Route index element={<AdminInvoicesIndex />} />
+                <Route path="session/:usageLogId" element={<AdminSessionInvoice />} />
                 <Route path=":userId" element={<AdminInvoiceDetail />} />
                 <Route path=":userId/:yearMonth" element={<AdminInvoiceDetail />} />
               </Route>

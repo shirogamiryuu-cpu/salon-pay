@@ -224,8 +224,8 @@ function InvoiceDetail() {
                               <Pencil className="h-3.5 w-3.5" />
                             </Button>
                             {e.usage_log_id && (
-                              <Button asChild variant="ghost" size="icon" className="h-7 w-7" title="Single-session invoice">
-                                <Link to={`?session=${e.usage_log_id}`}><FileText className="h-3.5 w-3.5" /></Link>
+                              <Button asChild variant="ghost" size="icon" className="h-7 w-7" title="Session invoice (staff + stylist)">
+                                <Link to={`/admin/invoices/session/${e.usage_log_id}`}><FileText className="h-3.5 w-3.5" /></Link>
                               </Button>
                             )}
                           </div>
