@@ -182,77 +182,112 @@ function SessionInvoiceDetail() {
             {s.phone && <div className="text-xs"><span className="font-semibold">Mobile:</span> {s.phone}</div>}
           </div>
 
-          <div className="text-center text-2xl font-semibold">Session Invoice</div>
+          <div className="text-center text-2xl font-semibold">Invoice</div>
 
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div><span className="font-bold">Invoice No.</span> {invoiceNo}</div>
-            <div className="text-right"><span className="font-bold">Date</span> {format(usedAt, "MM/dd/yyyy HH:mm")}</div>
-            <div><span className="font-bold">Package:</span> {pkgName}</div>
-            <div className="text-right">
-              {data.log.variant_label && <><span className="font-bold">Variant:</span> {data.log.variant_label}</>}
-            </div>
-            {data.customer && (
-              <>
-                <div><span className="font-bold">Customer:</span> {data.customer.name ?? data.customer.email}</div>
+          {(() => {
+            const stylists = data.entries.filter((e) => e.role === "stylist");
+            const assistants = data.entries.filter((e) => e.role !== "stylist");
+            const nameOf = (e: (typeof data.entries)[number]) => {
+              const p = e.profiles as { name?: string; email?: string } | null;
+              return p?.name ?? p?.email ?? "—";
+            };
+            return (
+              <div className="grid grid-cols-2 gap-y-1 text-sm">
+                <div><span className="font-bold">Invoice No.</span> {invoiceNo}</div>
+                <div className="text-right"><span className="font-bold">Date</span> {format(usedAt, "MM/dd/yyyy hh:mm a")}</div>
+                <div><span className="font-bold">Customer</span></div>
                 <div className="text-right">
-                  {data.customer.phone && <><span className="font-bold">Mobile:</span> {data.customer.phone}</>}
+                  <span className="font-bold">Stylist:</span>{" "}
+                  {stylists.length ? stylists.map(nameOf).join(", ") : "—"}
                 </div>
-              </>
-            )}
-            <div className="col-span-2"><span className="font-bold">Session revenue:</span> {cur(revenue)}</div>
+                <div>{data.customer?.name ?? "Walk-In Customer"}</div>
+                <div className="text-right">
+                  <span className="font-bold">Assistant:</span>{" "}
+                  {assistants.length ? assistants.map(nameOf).join(", ") : "—"}
+                </div>
+                <div><span className="font-bold">Mobile:</span> {data.customer?.phone ?? ""}</div>
+                <div className="text-right">
+                  {data.log.variant_label && <><span className="font-bold">Variant:</span> {data.log.variant_label}</>}
+                </div>
+              </div>
+            );
+          })()}
+
+          <table className="w-full text-sm">
+            <thead className="border-b-2">
+              <tr>
+                <th className="text-left py-2 font-bold">Product</th>
+                <th className="text-right py-2 font-bold">Quantity</th>
+                <th className="text-right py-2 font-bold">Unit Price</th>
+                <th className="text-right py-2 font-bold">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="py-1.5">{pkgName}{data.log.variant_label ? ` — ${data.log.variant_label}` : ""}</td>
+                <td className="py-1.5 text-right">1 Pc(s)</td>
+                <td className="py-1.5 text-right font-mono">{revenue.toLocaleString()}</td>
+                <td className="py-1.5 text-right font-mono">{revenue.toLocaleString()}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div className="border-t pt-3 space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span className="font-bold">Subtotal:</span>
+              <span className="font-mono">{cur(revenue)}</span>
+            </div>
+            <div className="flex justify-between text-base">
+              <span className="font-bold">Total:</span>
+              <span className="font-mono font-bold">{cur(revenue)}</span>
+            </div>
           </div>
 
-          {data.entries.length === 0 ? (
-            <div className="p-10 text-center text-sm text-muted-foreground">No commissions for this session.</div>
-          ) : (
-            <table className="w-full text-sm">
-              <thead className="border-b-2">
-                <tr>
-                  <th className="text-left py-2 font-bold">Role</th>
-                  <th className="text-left py-2 font-bold">Name</th>
-                  <th className="text-right py-2 font-bold">Rate</th>
-                  <th className="text-right py-2 font-bold">Commission</th>
-                  {review && <th className="py-2 print:hidden"></th>}
-                </tr>
-              </thead>
-              <tbody>
-                {data.entries
-                  .slice()
-                  .sort((a, b) => (a.role === b.role ? 0 : a.role === "stylist" ? -1 : 1))
-                  .map((e) => {
-                    const p = e.profiles as { name?: string; email?: string } | null;
-                    const rate =
-                      e.commission_type === "flat"
-                        ? cur(Number(e.commission_value ?? 0))
-                        : `${Number(e.commission_value ?? 0)}%`;
-                    return (
-                      <tr key={e.id}>
-                        <td className="py-1.5">{roleLabel(e.role)}</td>
-                        <td className="py-1.5">{p?.name ?? p?.email ?? "—"}</td>
-                        <td className="py-1.5 text-right text-xs">{rate}</td>
-                        <td className="py-1.5 text-right font-mono">
-                          {Number(e.commission_amount).toLocaleString()}
-                        </td>
-                        {review && (
-                          <td className="py-1.5 text-right print:hidden">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7"
-                              onClick={() =>
-                                setEditing({ id: e.id, amount: String(e.commission_amount ?? 0) })
-                              }
-                            >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Button>
-                          </td>
-                        )}
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
+          {data.entries.length > 0 && (
+            <div className="border-t-2 pt-3 space-y-2 text-sm">
+              <div className="font-bold">Commission breakdown</div>
+              <table className="w-full text-sm">
+                <thead className="border-b">
+                  <tr className="text-xs text-muted-foreground">
+                    <th className="text-left py-1 font-medium">Role</th>
+                    <th className="text-left py-1 font-medium">Name</th>
+                    <th className="text-right py-1 font-medium">Rate</th>
+                    <th className="text-right py-1 font-medium">Commission</th>
+                    {review && <th className="py-1 print:hidden"></th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.entries
+                    .slice()
+                    .sort((a, b) => (a.role === b.role ? 0 : a.role === "stylist" ? -1 : 1))
+                    .map((e) => {
+                      const p = e.profiles as { name?: string; email?: string } | null;
+                      const rate =
+                        e.commission_type === "flat"
+                          ? cur(Number(e.commission_value ?? 0))
+                          : `${Number(e.commission_value ?? 0)}%`;
+                      return (
+                        <tr key={e.id}>
+                          <td className="py-1.5">{roleLabel(e.role)}</td>
+                          <td className="py-1.5">{p?.name ?? p?.email ?? "—"}</td>
+                          <td className="py-1.5 text-right text-xs">{rate}</td>
+                          <td className="py-1.5 text-right font-mono">{Number(e.commission_amount).toLocaleString()}</td>
+                          {review && (
+                            <td className="py-1.5 text-right print:hidden">
+                              <Button variant="ghost" size="icon" className="h-7 w-7"
+                                onClick={() => setEditing({ id: e.id, amount: String(e.commission_amount ?? 0) })}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
           )}
+
 
           <div className="border-t-2 pt-4 space-y-1 text-sm">
             <div className="flex justify-between">
