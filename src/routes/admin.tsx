@@ -6,7 +6,6 @@ import { Loader2 } from "lucide-react";
 
 export default AdminLayout;
 
-
 function AdminLayout() {
   const { loading, session, isAdmin } = useAuth();
   const navigate = useNavigate();

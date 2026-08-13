@@ -7,7 +7,6 @@ import { Loader2, ChevronRight, User } from "lucide-react";
 
 export default StaffListPage;
 
-
 function StaffListPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-staff-list"],
@@ -21,7 +20,10 @@ function StaffListPage() {
 
       const [profRes, entriesRes] = await Promise.all([
         supabase.from("profiles").select("id,name,email").in("id", ids),
-        supabase.from("commission_entries").select("staff_user_id, commission_amount, status").in("staff_user_id", ids),
+        supabase
+          .from("commission_entries")
+          .select("staff_user_id, commission_amount, status")
+          .in("staff_user_id", ids),
       ]);
       const profiles = profRes.data ?? [];
       const entries = entriesRes.data ?? [];
@@ -32,19 +34,23 @@ function StaffListPage() {
         if (r.role === "stylist" || !roleByUser.has(r.user_id)) roleByUser.set(r.user_id, r.role);
       }
 
-      return ids.map((id) => {
-        const p = profiles.find((x) => x.id === id);
-        const own = entries.filter((e) => e.staff_user_id === id);
-        return {
-          id,
-          name: p?.name ?? p?.email ?? "Unknown",
-          email: p?.email ?? "",
-          role: roleByUser.get(id) ?? "staff",
-          sessions: own.length,
-          total: own.reduce((s, e) => s + Number(e.commission_amount), 0),
-          unpaid: own.filter((e) => e.status !== "paid").reduce((s, e) => s + Number(e.commission_amount), 0),
-        };
-      }).sort((a, b) => b.total - a.total);
+      return ids
+        .map((id) => {
+          const p = profiles.find((x) => x.id === id);
+          const own = entries.filter((e) => e.staff_user_id === id);
+          return {
+            id,
+            name: p?.name ?? p?.email ?? "Unknown",
+            email: p?.email ?? "",
+            role: roleByUser.get(id) ?? "staff",
+            sessions: own.length,
+            total: own.reduce((s, e) => s + Number(e.commission_amount), 0),
+            unpaid: own
+              .filter((e) => e.status !== "paid")
+              .reduce((s, e) => s + Number(e.commission_amount), 0),
+          };
+        })
+        .sort((a, b) => b.total - a.total);
     },
   });
 
@@ -52,15 +58,21 @@ function StaffListPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Staff & Stylists</h1>
-        <p className="text-sm text-muted-foreground">Click a person to see all their sessions and monthly totals.</p>
+        <p className="text-sm text-muted-foreground">
+          Click a person to see all their sessions and monthly totals.
+        </p>
       </div>
 
       <Card>
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-8 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+            <div className="p-8 flex justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
           ) : !data?.length ? (
-            <div className="p-10 text-center text-sm text-muted-foreground">No staff or stylists found.</div>
+            <div className="p-10 text-center text-sm text-muted-foreground">
+              No staff or stylists found.
+            </div>
           ) : (
             <div className="divide-y">
               {data.map((s) => (
@@ -75,13 +87,19 @@ function StaffListPage() {
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate flex items-center gap-2">
                       {s.name}
-                      <Badge variant="secondary" className="capitalize text-xs">{s.role}</Badge>
+                      <Badge variant="secondary" className="capitalize text-xs">
+                        {s.role}
+                      </Badge>
                     </div>
-                    <div className="text-xs text-muted-foreground truncate">{s.email} · {s.sessions} sessions</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {s.email} · {s.sessions} sessions
+                    </div>
                   </div>
                   <div className="text-right">
                     <div className="font-mono font-semibold">MMK {s.total.toFixed(2)}</div>
-                    {s.unpaid > 0 && <div className="text-xs text-amber-600">MMK {s.unpaid.toFixed(2)} unpaid</div>}
+                    {s.unpaid > 0 && (
+                      <div className="text-xs text-amber-600">MMK {s.unpaid.toFixed(2)} unpaid</div>
+                    )}
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </Link>

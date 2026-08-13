@@ -4,7 +4,7 @@
 - Add an `invoice_logo_url` field to `app_settings` (default = uploaded asset URL) and expose it in `useInvoiceSettings` + Admin → Settings → Invoice layout (with a text field so a different URL can be swapped in later).
 - Render the logo centered above the tagline/wordmark in both invoice routes (`admin.invoices.$userId.$yearMonth.tsx` and `staff.invoices.$yearMonth.tsx`), sized ~120px, print-safe.
 
-*(Requires you to re-upload the logo file — I don't see it in the current uploads.)*
+_(Requires you to re-upload the logo file — I don't see it in the current uploads.)_
 
 ## 2. Flexible invoice ranges (day / session / month)
 

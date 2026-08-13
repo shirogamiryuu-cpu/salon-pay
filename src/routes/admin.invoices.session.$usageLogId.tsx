@@ -6,11 +6,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Loader2, Printer, ArrowLeft, Pencil, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { useInvoiceSettings, paperPrintCss, DEFAULT_INVOICE_SETTINGS } from "@/hooks/useInvoiceSettings";
+import {
+  useInvoiceSettings,
+  paperPrintCss,
+  DEFAULT_INVOICE_SETTINGS,
+} from "@/hooks/useInvoiceSettings";
 
 export default SessionInvoiceDetail;
 
@@ -45,7 +55,11 @@ function SessionInvoiceDetail() {
           ? supabase.from("packages").select("id,name").eq("id", cp.package_id).maybeSingle()
           : Promise.resolve({ data: null }),
         cp?.customer_id
-          ? supabase.from("profiles").select("name,email,phone").eq("id", cp.customer_id).maybeSingle()
+          ? supabase
+              .from("profiles")
+              .select("name,email,phone")
+              .eq("id", cp.customer_id)
+              .maybeSingle()
           : Promise.resolve({ data: null }),
         supabase
           .from("commission_entries")
@@ -56,7 +70,7 @@ function SessionInvoiceDetail() {
 
       const entries = entriesRes.data ?? [];
       const staffIds = entries.map((e) => e.staff_user_id);
-      let rolesMap = new Map<string, Role>();
+      const rolesMap = new Map<string, Role>();
       if (staffIds.length > 0) {
         const { data: rolesRows } = await supabase
           .from("user_roles")
@@ -104,7 +118,9 @@ function SessionInvoiceDetail() {
     const unpaidIds = list.filter((e) => e.status !== "paid").map((e) => e.id);
     return {
       commission: list.reduce((s, e) => s + Number(e.commission_amount ?? 0), 0),
-      unpaid: list.filter((e) => e.status !== "paid").reduce((s, e) => s + Number(e.commission_amount ?? 0), 0),
+      unpaid: list
+        .filter((e) => e.status !== "paid")
+        .reduce((s, e) => s + Number(e.commission_amount ?? 0), 0),
       unpaidIds,
     };
   }, [data]);
@@ -130,7 +146,11 @@ function SessionInvoiceDetail() {
   const cur = (n: number) => `${s.currency}${n.toFixed(2)}`;
 
   if (isLoading || !data) {
-    return <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
+    return (
+      <div className="flex justify-center py-16">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   const usedAt = new Date(data.log.used_at);
@@ -145,7 +165,9 @@ function SessionInvoiceDetail() {
       <style>{paperPrintCss(s.paper)}</style>
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <Button asChild variant="ghost" size="sm">
-          <Link to="/admin/invoices"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Link>
+          <Link to="/admin/invoices">
+            <ArrowLeft className="h-4 w-4 mr-1" /> Back
+          </Link>
         </Button>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => setReview((v) => !v)}>
@@ -168,7 +190,11 @@ function SessionInvoiceDetail() {
         <CardContent className="invoice-body p-8 space-y-6">
           <div className="flex flex-col items-center text-center">
             {s.logo_url ? (
-              <img src={s.logo_url} alt={s.salon_name} className="h-24 w-auto object-contain mb-2" />
+              <img
+                src={s.logo_url}
+                alt={s.salon_name}
+                className="h-24 w-auto object-contain mb-2"
+              />
             ) : (
               <>
                 {s.tagline && (
@@ -179,7 +205,11 @@ function SessionInvoiceDetail() {
             )}
             {s.branch && <div className="text-4xl font-bold mt-1">{s.branch}</div>}
             {s.address && <div className="text-xs mt-2 whitespace-pre-line">{s.address}</div>}
-            {s.phone && <div className="text-xs"><span className="font-semibold">Mobile:</span> {s.phone}</div>}
+            {s.phone && (
+              <div className="text-xs">
+                <span className="font-semibold">Mobile:</span> {s.phone}
+              </div>
+            )}
           </div>
 
           <div className="text-center text-2xl font-semibold">Invoice</div>
@@ -193,9 +223,15 @@ function SessionInvoiceDetail() {
             };
             return (
               <div className="grid grid-cols-2 gap-y-1 text-sm">
-                <div><span className="font-bold">Invoice No.</span> {invoiceNo}</div>
-                <div className="text-right"><span className="font-bold">Date</span> {format(usedAt, "MM/dd/yyyy hh:mm a")}</div>
-                <div><span className="font-bold">Customer</span></div>
+                <div>
+                  <span className="font-bold">Invoice No.</span> {invoiceNo}
+                </div>
+                <div className="text-right">
+                  <span className="font-bold">Date</span> {format(usedAt, "MM/dd/yyyy hh:mm a")}
+                </div>
+                <div>
+                  <span className="font-bold">Customer</span>
+                </div>
                 <div className="text-right">
                   <span className="font-bold">Stylist:</span>{" "}
                   {stylists.length ? stylists.map(nameOf).join(", ") : "—"}
@@ -205,9 +241,15 @@ function SessionInvoiceDetail() {
                   <span className="font-bold">Assistant:</span>{" "}
                   {assistants.length ? assistants.map(nameOf).join(", ") : "—"}
                 </div>
-                <div><span className="font-bold">Mobile:</span> {data.customer?.phone ?? ""}</div>
+                <div>
+                  <span className="font-bold">Mobile:</span> {data.customer?.phone ?? ""}
+                </div>
                 <div className="text-right">
-                  {data.log.variant_label && <><span className="font-bold">Variant:</span> {data.log.variant_label}</>}
+                  {data.log.variant_label && (
+                    <>
+                      <span className="font-bold">Variant:</span> {data.log.variant_label}
+                    </>
+                  )}
                 </div>
               </div>
             );
@@ -224,7 +266,10 @@ function SessionInvoiceDetail() {
             </thead>
             <tbody>
               <tr>
-                <td className="py-1.5">{pkgName}{data.log.variant_label ? ` — ${data.log.variant_label}` : ""}</td>
+                <td className="py-1.5">
+                  {pkgName}
+                  {data.log.variant_label ? ` — ${data.log.variant_label}` : ""}
+                </td>
                 <td className="py-1.5 text-right">1 Pc(s)</td>
                 <td className="py-1.5 text-right font-mono">{revenue.toLocaleString()}</td>
                 <td className="py-1.5 text-right font-mono">{revenue.toLocaleString()}</td>
@@ -271,11 +316,19 @@ function SessionInvoiceDetail() {
                           <td className="py-1.5">{roleLabel(e.role)}</td>
                           <td className="py-1.5">{p?.name ?? p?.email ?? "—"}</td>
                           <td className="py-1.5 text-right text-xs">{rate}</td>
-                          <td className="py-1.5 text-right font-mono">{Number(e.commission_amount).toLocaleString()}</td>
+                          <td className="py-1.5 text-right font-mono">
+                            {Number(e.commission_amount).toLocaleString()}
+                          </td>
                           {review && (
                             <td className="py-1.5 text-right print:hidden">
-                              <Button variant="ghost" size="icon" className="h-7 w-7"
-                                onClick={() => setEditing({ id: e.id, amount: String(e.commission_amount ?? 0) })}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() =>
+                                  setEditing({ id: e.id, amount: String(e.commission_amount ?? 0) })
+                                }
+                              >
                                 <Pencil className="h-3.5 w-3.5" />
                               </Button>
                             </td>
@@ -287,7 +340,6 @@ function SessionInvoiceDetail() {
               </table>
             </div>
           )}
-
 
           {data.entries.length > 0 && (
             <div className="border-t pt-3 space-y-1 text-sm">
@@ -304,13 +356,17 @@ function SessionInvoiceDetail() {
             </div>
           )}
 
-          {s.footer && <div className="pt-6 text-sm text-center whitespace-pre-line">{s.footer}</div>}
+          {s.footer && (
+            <div className="pt-6 text-sm text-center whitespace-pre-line">{s.footer}</div>
+          )}
         </CardContent>
       </Card>
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent className="sm:max-w-sm">
-          <DialogHeader><DialogTitle>Edit commission amount</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Edit commission amount</DialogTitle>
+          </DialogHeader>
           {editing && (
             <div className="space-y-2">
               <Label className="text-xs">Amount ({s.currency.trim() || ""})</Label>
@@ -323,9 +379,13 @@ function SessionInvoiceDetail() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setEditing(null)}>
+              Cancel
+            </Button>
             <Button
-              onClick={() => editing && saveEdit.mutate({ id: editing.id, amount: Number(editing.amount) })}
+              onClick={() =>
+                editing && saveEdit.mutate({ id: editing.id, amount: Number(editing.amount) })
+              }
               disabled={saveEdit.isPending}
             >
               {saveEdit.isPending ? "Saving…" : "Save"}

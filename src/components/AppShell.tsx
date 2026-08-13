@@ -2,7 +2,17 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Settings, DollarSign, Wallet, User, FileText, Sliders, Users } from "lucide-react";
+import {
+  LogOut,
+  LayoutDashboard,
+  Settings,
+  DollarSign,
+  Wallet,
+  User,
+  FileText,
+  Sliders,
+  Users,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CharmeLogo } from "@/components/CharmeLogo";
 
@@ -12,7 +22,15 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-export function AppShell({ children, nav, title }: { children: ReactNode; nav: NavItem[]; title: string }) {
+export function AppShell({
+  children,
+  nav,
+  title,
+}: {
+  children: ReactNode;
+  nav: NavItem[];
+  title: string;
+}) {
   const { signOut, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -38,12 +56,18 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
             <CharmeLogo size="sm" tagline={false} />
             <div className="hidden sm:block h-6 w-px bg-border" />
             <div className="hidden sm:block">
-              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">{title}</div>
-              <div className="font-serif-italic italic text-[11px] text-primary/80 leading-none">beautify with confidence</div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                {title}
+              </div>
+              <div className="font-serif-italic italic text-[11px] text-primary/80 leading-none">
+                beautify with confidence
+              </div>
             </div>
           </Link>
           <div className="flex items-center gap-2">
-            <span className="hidden sm:inline text-xs text-muted-foreground max-w-[180px] truncate">{user?.email}</span>
+            <span className="hidden sm:inline text-xs text-muted-foreground max-w-[180px] truncate">
+              {user?.email}
+            </span>
             <Button size="sm" variant="ghost" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline ml-1">Sign out</span>
@@ -63,7 +87,9 @@ export function AppShell({ children, nav, title }: { children: ReactNode; nav: N
                 to={item.to}
                 className={cn(
                   "flex-1 min-w-[80px] flex flex-col items-center gap-1 py-2 text-xs border-b-2 transition-colors",
-                  active ? "border-primary text-primary" : "border-transparent text-muted-foreground",
+                  active
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground",
                 )}
               >
                 <Icon className="h-4 w-4" />

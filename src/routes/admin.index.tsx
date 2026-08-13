@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,21 +7,31 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGri
 
 export default AdminDashboard;
 
-
 function AdminDashboard() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-dashboard"],
     queryFn: async () => {
       const since = subDays(new Date(), 30).toISOString();
       const [entriesRes, staffRes, runsRes] = await Promise.all([
-        supabase.from("commission_entries").select("id,commission_amount,status,earned_at,staff_user_id").gte("earned_at", since),
+        supabase
+          .from("commission_entries")
+          .select("id,commission_amount,status,earned_at,staff_user_id")
+          .gte("earned_at", since),
         supabase.from("user_roles").select("user_id,role").in("role", ["staff", "stylist"]),
-        supabase.from("payroll_runs").select("id,total_amount,status,created_at").order("created_at", { ascending: false }).limit(5),
+        supabase
+          .from("payroll_runs")
+          .select("id,total_amount,status,created_at")
+          .order("created_at", { ascending: false })
+          .limit(5),
       ]);
       const entries = entriesRes.data ?? [];
       const totalCommissions = entries.reduce((s, e) => s + Number(e.commission_amount ?? 0), 0);
-      const pendingAmount = entries.filter((e) => e.status === "pending").reduce((s, e) => s + Number(e.commission_amount ?? 0), 0);
-      const paidAmount = entries.filter((e) => e.status === "paid").reduce((s, e) => s + Number(e.commission_amount ?? 0), 0);
+      const pendingAmount = entries
+        .filter((e) => e.status === "pending")
+        .reduce((s, e) => s + Number(e.commission_amount ?? 0), 0);
+      const paidAmount = entries
+        .filter((e) => e.status === "paid")
+        .reduce((s, e) => s + Number(e.commission_amount ?? 0), 0);
       const uniqueStaff = new Set((staffRes.data ?? []).map((r) => r.user_id)).size;
 
       // daily buckets
@@ -32,9 +41,13 @@ function AdminDashboard() {
       }
       for (const e of entries) {
         const key = format(startOfDay(new Date(e.earned_at)), "MMM d");
-        if (buckets.has(key)) buckets.set(key, (buckets.get(key) ?? 0) + Number(e.commission_amount ?? 0));
+        if (buckets.has(key))
+          buckets.set(key, (buckets.get(key) ?? 0) + Number(e.commission_amount ?? 0));
       }
-      const chart = Array.from(buckets.entries()).map(([day, amount]) => ({ day, amount: Number(amount.toFixed(2)) }));
+      const chart = Array.from(buckets.entries()).map(([day, amount]) => ({
+        day,
+        amount: Number(amount.toFixed(2)),
+      }));
 
       return {
         totalCommissions,
@@ -57,17 +70,39 @@ function AdminDashboard() {
   }
 
   const stats = [
-    { label: "Total Commissions (30d)", value: `MMK ${data.totalCommissions.toFixed(2)}`, icon: DollarSign, tint: "text-emerald-600 bg-emerald-50" },
-    { label: "Pending Payout", value: `MMK ${data.pendingAmount.toFixed(2)}`, icon: TrendingUp, tint: "text-amber-600 bg-amber-50" },
-    { label: "Paid Out (30d)", value: `MMK ${data.paidAmount.toFixed(2)}`, icon: Wallet, tint: "text-blue-600 bg-blue-50" },
-    { label: "Active Staff", value: String(data.staffCount), icon: Users, tint: "text-purple-600 bg-purple-50" },
+    {
+      label: "Total Commissions (30d)",
+      value: `MMK ${data.totalCommissions.toFixed(2)}`,
+      icon: DollarSign,
+      tint: "text-emerald-600 bg-emerald-50",
+    },
+    {
+      label: "Pending Payout",
+      value: `MMK ${data.pendingAmount.toFixed(2)}`,
+      icon: TrendingUp,
+      tint: "text-amber-600 bg-amber-50",
+    },
+    {
+      label: "Paid Out (30d)",
+      value: `MMK ${data.paidAmount.toFixed(2)}`,
+      icon: Wallet,
+      tint: "text-blue-600 bg-blue-50",
+    },
+    {
+      label: "Active Staff",
+      value: String(data.staffCount),
+      icon: Users,
+      tint: "text-purple-600 bg-purple-50",
+    },
   ];
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Overview of commissions from the last 30 days.</p>
+        <p className="text-sm text-muted-foreground">
+          Overview of commissions from the last 30 days.
+        </p>
       </div>
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
@@ -122,7 +157,9 @@ function AdminDashboard() {
               {data.recentRuns.map((r) => (
                 <div key={r.id} className="py-3 flex items-center justify-between text-sm">
                   <div>
-                    <div className="font-medium">{format(new Date(r.created_at), "MMM d, yyyy")}</div>
+                    <div className="font-medium">
+                      {format(new Date(r.created_at), "MMM d, yyyy")}
+                    </div>
                     <div className="text-xs text-muted-foreground capitalize">{r.status}</div>
                   </div>
                   <div className="font-mono">MMK {Number(r.total_amount ?? 0).toFixed(2)}</div>

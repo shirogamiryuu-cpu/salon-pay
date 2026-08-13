@@ -69,8 +69,8 @@
   --radius: 0.5rem;
 
   /* Neutrals */
-  --background: oklch(1 0 0);                     /* white */
-  --foreground: oklch(0.32 0 0);                  /* #333 Cool Gray 11C */
+  --background: oklch(1 0 0); /* white */
+  --foreground: oklch(0.32 0 0); /* #333 Cool Gray 11C */
 
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.32 0 0);
@@ -82,11 +82,11 @@
   --primary-foreground: oklch(1 0 0);
 
   /* Warm surfaces */
-  --secondary: oklch(0.955 0.018 85);             /* soft cream */
+  --secondary: oklch(0.955 0.018 85); /* soft cream */
   --secondary-foreground: oklch(0.32 0 0);
   --muted: oklch(0.965 0.012 85);
-  --muted-foreground: oklch(0.6 0 0);             /* #8C8C8C Cool Gray 7C */
-  --accent: oklch(0.92 0.03 85);                  /* warm cream accent */
+  --muted-foreground: oklch(0.6 0 0); /* #8C8C8C Cool Gray 7C */
+  --accent: oklch(0.92 0.03 85); /* warm cream accent */
   --accent-foreground: oklch(0.32 0 0);
 
   --destructive: oklch(0.577 0.245 27.325);
@@ -96,11 +96,11 @@
   --input: oklch(0.9 0.015 80);
   --ring: oklch(0.67 0.078 76);
 
-  --chart-1: oklch(0.67 0.078 76);                /* gold */
-  --chart-2: oklch(0.78 0.06 78);                 /* light gold */
-  --chart-3: oklch(0.5 0.05 75);                  /* dark gold */
-  --chart-4: oklch(0.6 0 0);                      /* cool gray */
-  --chart-5: oklch(0.85 0.04 85);                 /* cream */
+  --chart-1: oklch(0.67 0.078 76); /* gold */
+  --chart-2: oklch(0.78 0.06 78); /* light gold */
+  --chart-3: oklch(0.5 0.05 75); /* dark gold */
+  --chart-4: oklch(0.6 0 0); /* cool gray */
+  --chart-5: oklch(0.85 0.04 85); /* cream */
 
   --sidebar: oklch(0.985 0.006 85);
   --sidebar-foreground: oklch(0.32 0 0);
@@ -112,13 +112,18 @@
   --sidebar-ring: oklch(0.67 0.078 76);
 
   /* Brand extras */
-  --gradient-gold: linear-gradient(90deg, oklch(0.78 0.06 78), oklch(0.67 0.078 76), oklch(0.5 0.05 75));
+  --gradient-gold: linear-gradient(
+    90deg,
+    oklch(0.78 0.06 78),
+    oklch(0.67 0.078 76),
+    oklch(0.5 0.05 75)
+  );
   --shadow-elegant: 0 10px 30px -12px oklch(0.5 0.05 75 / 0.25);
 }
 
 .dark {
   /* Guidelines: when dark background required, use dark grey, not pure black */
-  --background: oklch(0.28 0.005 80);             /* dark warm grey */
+  --background: oklch(0.28 0.005 80); /* dark warm grey */
   --foreground: oklch(0.98 0.005 85);
 
   --card: oklch(0.32 0.005 80);
@@ -126,7 +131,7 @@
   --popover: oklch(0.32 0.005 80);
   --popover-foreground: oklch(0.98 0.005 85);
 
-  --primary: oklch(0.75 0.09 78);                 /* brighter gold on dark */
+  --primary: oklch(0.75 0.09 78); /* brighter gold on dark */
   --primary-foreground: oklch(0.22 0.005 80);
 
   --secondary: oklch(0.38 0.008 80);
@@ -170,7 +175,10 @@
     font-family: var(--font-sans);
   }
 
-  h1, h2, h3, .font-display {
+  h1,
+  h2,
+  h3,
+  .font-display {
     font-family: var(--font-display);
     letter-spacing: 0.01em;
   }
@@ -193,19 +201,34 @@
     ),
     radial-gradient(circle at 20% 30%, oklch(0.67 0.078 76 / 0.06) 0 2px, transparent 3px),
     radial-gradient(circle at 70% 65%, oklch(0.67 0.078 76 / 0.06) 0 2px, transparent 3px);
-  background-size: auto, 80px 80px, 80px 80px;
+  background-size:
+    auto,
+    80px 80px,
+    80px 80px;
 }
 
 @media print {
-  .charme-pattern { background: white; }
+  .charme-pattern {
+    background: white;
+  }
 }
 
 /* Print isolation — only the invoice sheet prints */
 @media print {
-  @page { margin: 0; }
-  html, body { background: white !important; }
-  body * { visibility: hidden !important; }
-  .invoice-sheet, .invoice-sheet * { visibility: visible !important; }
+  @page {
+    margin: 0;
+  }
+  html,
+  body {
+    background: white !important;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  .invoice-sheet,
+  .invoice-sheet * {
+    visibility: visible !important;
+  }
   .invoice-sheet {
     position: absolute !important;
     left: 0 !important;

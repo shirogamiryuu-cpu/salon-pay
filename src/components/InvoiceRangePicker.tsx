@@ -10,12 +10,7 @@ export function InvoiceRangePicker(props: {
   fromISO: string;
   toISO: string;
   session?: string;
-  onChange: (next: {
-    mode: RangeMode;
-    from?: string;
-    to?: string;
-    session?: string;
-  }) => void;
+  onChange: (next: { mode: RangeMode; from?: string; to?: string; session?: string }) => void;
 }) {
   const { mode, fromISO, toISO, session } = props;
   const [dayValue, setDayValue] = useState(fromISO);
@@ -50,7 +45,9 @@ export function InvoiceRangePicker(props: {
               else props.onChange({ mode: "custom", from: rangeFrom, to: rangeTo });
             }}
             className={`px-3 py-1 text-xs rounded-sm border ${
-              mode === m ? "bg-primary text-primary-foreground border-primary" : "text-muted-foreground"
+              mode === m
+                ? "bg-primary text-primary-foreground border-primary"
+                : "text-muted-foreground"
             }`}
           >
             {m === "day" ? "Day" : m === "month" ? "Month" : "Date range"}
@@ -167,8 +164,12 @@ export function InvoiceRangePicker(props: {
 function QuickBtns({ onToday, onYesterday }: { onToday: () => void; onYesterday: () => void }) {
   return (
     <>
-      <Button variant="outline" size="sm" onClick={onToday}>Today</Button>
-      <Button variant="outline" size="sm" onClick={onYesterday}>Yesterday</Button>
+      <Button variant="outline" size="sm" onClick={onToday}>
+        Today
+      </Button>
+      <Button variant="outline" size="sm" onClick={onYesterday}>
+        Yesterday
+      </Button>
     </>
   );
 }

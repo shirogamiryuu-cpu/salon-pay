@@ -5,7 +5,6 @@ import { Loader2 } from "lucide-react";
 
 export default Index;
 
-
 function Index() {
   const { loading, session, isAdmin, isStaff } = useAuth();
   const navigate = useNavigate();

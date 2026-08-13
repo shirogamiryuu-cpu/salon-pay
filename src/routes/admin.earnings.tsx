@@ -1,12 +1,28 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { useMemo, useState } from "react";
+
+type CommissionEntry = Database["public"]["Tables"]["commission_entries"]["Row"];
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
@@ -21,13 +37,16 @@ function EarningsPage() {
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
   const [addOpen, setAddOpen] = useState(false);
-  const [editEntry, setEditEntry] = useState<any | null>(null);
+  const [editEntry, setEditEntry] = useState<CommissionEntry | null>(null);
   const qc = useQueryClient();
 
   const { data: staffOptions } = useQuery({
     queryKey: ["staff-options"],
     queryFn: async () => {
-      const { data: roles } = await supabase.from("user_roles").select("user_id,role").in("role", ["staff", "stylist"]);
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("user_id,role")
+        .in("role", ["staff", "stylist"]);
       const ids = Array.from(new Set((roles ?? []).map((r) => r.user_id)));
       if (ids.length === 0) return [];
       const { data: profs } = await supabase.from("profiles").select("id,name,email").in("id", ids);
@@ -90,11 +109,15 @@ function EarningsPage() {
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">Staff Earnings</h1>
-          <p className="text-sm text-muted-foreground">Filter commission entries by staff, status and date.</p>
+          <p className="text-sm text-muted-foreground">
+            Filter commission entries by staff, status and date.
+          </p>
         </div>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogTrigger asChild>
-            <Button><Plus className="h-4 w-4 mr-1" /> Add manual entry</Button>
+            <Button>
+              <Plus className="h-4 w-4 mr-1" /> Add manual entry
+            </Button>
           </DialogTrigger>
           <ManualEntryDialog
             staffOptions={staffOptions ?? []}
@@ -126,11 +149,15 @@ function EarningsPage() {
           <div>
             <label className="text-xs text-muted-foreground">Staff</label>
             <Select value={staffFilter} onValueChange={setStaffFilter}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All staff</SelectItem>
                 {staffOptions?.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>{s.name ?? s.email}</SelectItem>
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name ?? s.email}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -138,7 +165,9 @@ function EarningsPage() {
           <div>
             <label className="text-xs text-muted-foreground">Status</label>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
@@ -160,17 +189,36 @@ function EarningsPage() {
       </Card>
 
       <div className="grid grid-cols-3 gap-4">
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Entries</div><div className="text-xl font-bold">{totals.count}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Revenue</div><div className="text-xl font-bold">MMK {totals.revenue.toFixed(2)}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Commissions</div><div className="text-xl font-bold text-primary">MMK {totals.total.toFixed(2)}</div></CardContent></Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-xs text-muted-foreground">Entries</div>
+            <div className="text-xl font-bold">{totals.count}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-xs text-muted-foreground">Revenue</div>
+            <div className="text-xl font-bold">MMK {totals.revenue.toFixed(2)}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-xs text-muted-foreground">Commissions</div>
+            <div className="text-xl font-bold text-primary">MMK {totals.total.toFixed(2)}</div>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-8 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+            <div className="p-8 flex justify-center">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
           ) : !entries?.length ? (
-            <div className="p-10 text-center text-sm text-muted-foreground">No entries match these filters.</div>
+            <div className="p-10 text-center text-sm text-muted-foreground">
+              No entries match these filters.
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -193,19 +241,39 @@ function EarningsPage() {
                     const isManual = !e.usage_log_id && !e.session_deduction_request_id;
                     return (
                       <tr key={e.id}>
-                        <td className="p-3 whitespace-nowrap">{format(new Date(e.earned_at), "MMM d, yyyy")}</td>
+                        <td className="p-3 whitespace-nowrap">
+                          {format(new Date(e.earned_at), "MMM d, yyyy")}
+                        </td>
                         <td className="p-3">
                           {profile?.name ?? profile?.email ?? "—"}
-                          {isManual && <Badge variant="outline" className="ml-2 text-[10px]">manual</Badge>}
+                          {isManual && (
+                            <Badge variant="outline" className="ml-2 text-[10px]">
+                              manual
+                            </Badge>
+                          )}
                         </td>
                         <td className="p-3">{pkg?.name ?? "—"}</td>
-                        <td className="p-3 text-right font-mono">MMK {Number(e.session_revenue).toFixed(2)}</td>
-                        <td className="p-3 text-right text-xs text-muted-foreground">
-                          {e.commission_type === "percentage" ? `${e.commission_value}%` : `$${e.commission_value}`}
+                        <td className="p-3 text-right font-mono">
+                          MMK {Number(e.session_revenue).toFixed(2)}
                         </td>
-                        <td className="p-3 text-right font-mono font-semibold">MMK {Number(e.commission_amount).toFixed(2)}</td>
+                        <td className="p-3 text-right text-xs text-muted-foreground">
+                          {e.commission_type === "percentage"
+                            ? `${e.commission_value}%`
+                            : `MMK ${e.commission_value}`}
+                        </td>
+                        <td className="p-3 text-right font-mono font-semibold">
+                          MMK {Number(e.commission_amount).toFixed(2)}
+                        </td>
                         <td className="p-3">
-                          <Badge variant={e.status === "paid" ? "default" : e.status === "included" ? "secondary" : "outline"}>
+                          <Badge
+                            variant={
+                              e.status === "paid"
+                                ? "default"
+                                : e.status === "included"
+                                  ? "secondary"
+                                  : "outline"
+                            }
+                          >
                             {e.status}
                           </Badge>
                         </td>
@@ -213,11 +281,7 @@ function EarningsPage() {
                           {e.status !== "paid" && e.status !== "included" && (
                             <>
                               {isManual && (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => setEditEntry(e)}
-                                >
+                                <Button size="sm" variant="ghost" onClick={() => setEditEntry(e)}>
                                   <Pencil className="h-3.5 w-3.5" />
                                 </Button>
                               )}
@@ -225,7 +289,8 @@ function EarningsPage() {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => {
-                                  if (confirm("Delete this commission entry?")) deleteEntry.mutate(e.id);
+                                  if (confirm("Delete this commission entry?"))
+                                    deleteEntry.mutate(e.id);
                                 }}
                               >
                                 <Trash2 className="h-3.5 w-3.5 text-destructive" />
@@ -254,18 +319,24 @@ function ManualEntryDialog({
 }: {
   staffOptions: { id: string; name?: string | null; email?: string | null; role?: string }[];
   packageOptions: { id: string; name: string; price: number }[];
-  entry?: any;
+  entry?: CommissionEntry;
   onDone: () => void;
 }) {
   const isEdit = !!entry;
   const [staffId, setStaffId] = useState(entry?.staff_user_id ?? "");
   const [packageId, setPackageId] = useState<string>(entry?.package_id ?? "none");
   const [earnedDate, setEarnedDate] = useState(
-    entry?.earned_at ? format(new Date(entry.earned_at), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
+    entry?.earned_at
+      ? format(new Date(entry.earned_at), "yyyy-MM-dd")
+      : format(new Date(), "yyyy-MM-dd"),
   );
   const [revenue, setRevenue] = useState(entry ? String(entry.session_revenue ?? 0) : "0");
-  const [commissionType, setCommissionType] = useState<"percentage" | "flat">(entry?.commission_type ?? "flat");
-  const [commissionValue, setCommissionValue] = useState(entry ? String(entry.commission_value ?? 0) : "0");
+  const [commissionType, setCommissionType] = useState<"percentage" | "flat">(
+    (entry?.commission_type as "percentage" | "flat") ?? "flat",
+  );
+  const [commissionValue, setCommissionValue] = useState(
+    entry ? String(entry.commission_value ?? 0) : "0",
+  );
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -295,7 +366,6 @@ function ManualEntryDialog({
     onDone();
   }
 
-
   return (
     <DialogContent className="max-w-md">
       <DialogHeader>
@@ -305,11 +375,14 @@ function ManualEntryDialog({
         <div>
           <Label>Staff</Label>
           <Select value={staffId} onValueChange={setStaffId}>
-            <SelectTrigger><SelectValue placeholder="Select staff…" /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue placeholder="Select staff…" />
+            </SelectTrigger>
             <SelectContent>
               {staffOptions.map((s) => (
                 <SelectItem key={s.id} value={s.id}>
-                  {s.name ?? s.email} <span className="text-xs text-muted-foreground ml-1">({s.role})</span>
+                  {s.name ?? s.email}{" "}
+                  <span className="text-xs text-muted-foreground ml-1">({s.role})</span>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -318,11 +391,15 @@ function ManualEntryDialog({
         <div>
           <Label>Package (optional)</Label>
           <Select value={packageId} onValueChange={setPackageId}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">— None —</SelectItem>
               {packageOptions.map((p) => (
-                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -334,14 +411,24 @@ function ManualEntryDialog({
           </div>
           <div>
             <Label>Session revenue</Label>
-            <Input type="number" step="0.01" value={revenue} onChange={(e) => setRevenue(e.target.value)} />
+            <Input
+              type="number"
+              step="0.01"
+              value={revenue}
+              onChange={(e) => setRevenue(e.target.value)}
+            />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
             <Label>Type</Label>
-            <Select value={commissionType} onValueChange={(v) => setCommissionType(v as "percentage" | "flat")}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={commissionType}
+              onValueChange={(v) => setCommissionType(v as "percentage" | "flat")}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="flat">Flat amount</SelectItem>
                 <SelectItem value="percentage">Percentage</SelectItem>
@@ -350,16 +437,26 @@ function ManualEntryDialog({
           </div>
           <div>
             <Label>{commissionType === "flat" ? "Amount" : "Percent"}</Label>
-            <Input type="number" step="0.01" value={commissionValue} onChange={(e) => setCommissionValue(e.target.value)} />
+            <Input
+              type="number"
+              step="0.01"
+              value={commissionValue}
+              onChange={(e) => setCommissionValue(e.target.value)}
+            />
           </div>
         </div>
         <div>
           <Label>Notes (optional)</Label>
-          <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Reason / correction reference" />
+          <Textarea
+            rows={2}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Reason / correction reference"
+          />
         </div>
         <div className="rounded-md bg-muted/50 p-3 text-sm flex justify-between">
           <span className="text-muted-foreground">Commission total</span>
-          <span className="font-mono font-bold text-primary">${computed.toFixed(2)}</span>
+          <span className="font-mono font-bold text-primary">MMK {computed.toFixed(2)}</span>
         </div>
       </div>
       <DialogFooter>

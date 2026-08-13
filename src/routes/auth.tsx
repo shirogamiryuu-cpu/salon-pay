@@ -36,10 +36,7 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center charme-pattern p-4">
-      <Card
-        className="w-full max-w-md border-0"
-        style={{ boxShadow: "var(--shadow-elegant)" }}
-      >
+      <Card className="w-full max-w-md border-0" style={{ boxShadow: "var(--shadow-elegant)" }}>
         <CardHeader className="text-center space-y-4 pt-8">
           <CharmeLogo size="lg" />
           <div className="h-[2px] w-16 mx-auto" style={{ background: "var(--gradient-gold)" }} />
@@ -56,11 +53,23 @@ function AuthPage() {
           <form onSubmit={handleSignIn} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <Button type="submit" className="w-full" disabled={busy}>
               {busy ? "Signing in…" : "Sign in"}

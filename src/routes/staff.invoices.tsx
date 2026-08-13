@@ -10,7 +10,6 @@ import { format } from "date-fns";
 
 export default StaffInvoices;
 
-
 function StaffInvoices() {
   const { user } = useAuth();
 
@@ -29,11 +28,20 @@ function StaffInvoices() {
   });
 
   const months = useMemo(() => {
-    const map = new Map<string, { ym: string; label: string; total: number; unpaid: number; count: number }>();
+    const map = new Map<
+      string,
+      { ym: string; label: string; total: number; unpaid: number; count: number }
+    >();
     for (const e of data ?? []) {
       const d = new Date(e.earned_at);
       const ym = format(d, "yyyy-MM");
-      const row = map.get(ym) ?? { ym, label: format(d, "MMMM yyyy"), total: 0, unpaid: 0, count: 0 };
+      const row = map.get(ym) ?? {
+        ym,
+        label: format(d, "MMMM yyyy"),
+        total: 0,
+        unpaid: 0,
+        count: 0,
+      };
       row.total += Number(e.commission_amount);
       if (e.status !== "paid") row.unpaid += Number(e.commission_amount);
       row.count += 1;
@@ -42,13 +50,20 @@ function StaffInvoices() {
     return Array.from(map.values()).sort((a, b) => (a.ym < b.ym ? 1 : -1));
   }, [data]);
 
-  if (isLoading) return <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center py-16">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">My Invoices</h1>
-        <p className="text-sm text-muted-foreground">Monthly commission summaries. Click a month to print or save as PDF.</p>
+        <p className="text-sm text-muted-foreground">
+          Monthly commission summaries. Click a month to print or save as PDF.
+        </p>
       </div>
 
       <Card>
@@ -71,11 +86,15 @@ function StaffInvoices() {
                     <div className="text-xs text-muted-foreground">{m.count} sessions</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono font-semibold">${m.total.toFixed(2)}</div>
+                    <div className="font-mono font-semibold">MMK {m.total.toFixed(2)}</div>
                     {m.unpaid > 0 ? (
-                      <Badge variant="outline" className="mt-1 text-amber-600 border-amber-300">${m.unpaid.toFixed(2)} unpaid</Badge>
+                      <Badge variant="outline" className="mt-1 text-amber-600 border-amber-300">
+                        MMK {m.unpaid.toFixed(2)} unpaid
+                      </Badge>
                     ) : (
-                      <Badge variant="default" className="mt-1">Paid</Badge>
+                      <Badge variant="default" className="mt-1">
+                        Paid
+                      </Badge>
                     )}
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />

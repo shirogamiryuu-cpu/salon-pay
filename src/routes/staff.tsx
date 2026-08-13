@@ -6,7 +6,6 @@ import { Loader2 } from "lucide-react";
 
 export default StaffLayout;
 
-
 function StaffLayout() {
   const { loading, session, isStaff, isAdmin } = useAuth();
   const navigate = useNavigate();
